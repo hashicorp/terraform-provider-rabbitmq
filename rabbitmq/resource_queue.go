@@ -1,6 +1,7 @@
 package rabbitmq
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
 	"strings"
@@ -53,8 +54,16 @@ func resourceQueue() *schema.Resource {
 						},
 
 						"arguments": &schema.Schema{
-							Type:     schema.TypeMap,
-							Optional: true,
+							Type:          schema.TypeMap,
+							Optional:      true,
+							ConflictsWith: []string{"settings.0.json_arguments"},
+						},
+
+						"json_arguments": &schema.Schema{
+							Type:          schema.TypeString,
+							Optional:      true,
+							ValidateFunc:  validateJsonString,
+							ConflictsWith: []string{"settings.0.arguments"},
 						},
 					},
 				},
@@ -73,6 +82,19 @@ func CreateQueue(d *schema.ResourceData, meta interface{}) error {
 	settingsMap, ok := settingsList[0].(map[string]interface{})
 	if !ok {
 		return fmt.Errorf("Unable to parse settings")
+	}
+
+	// If json_arguments is used, unmarshal it into a generic interface
+	// and use it as the "arguments" key for the queue.
+	if v, ok := settingsMap["json_arguments"].(string); ok && v != "" {
+		var arguments interface{}
+		err := json.Unmarshal([]byte(v), &arguments)
+		if err != nil {
+			return err
+		}
+
+		delete(settingsMap, "json_arguments")
+		settingsMap["arguments"] = arguments
 	}
 
 	if err := declareQueue(rmqc, vhost, name, settingsMap); err != nil {

@@ -11,7 +11,7 @@ import (
 	"github.com/hashicorp/terraform/terraform"
 )
 
-func TestAccQueue(t *testing.T) {
+func TestAccQueue_basic(t *testing.T) {
 	var queueInfo rabbithole.QueueInfo
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
@@ -20,6 +20,23 @@ func TestAccQueue(t *testing.T) {
 		Steps: []resource.TestStep{
 			resource.TestStep{
 				Config: testAccQueueConfig_basic,
+				Check: testAccQueueCheck(
+					"rabbitmq_queue.test", &queueInfo,
+				),
+			},
+		},
+	})
+}
+
+func TestAccQueue_jsonArguments(t *testing.T) {
+	var queueInfo rabbithole.QueueInfo
+	resource.Test(t, resource.TestCase{
+		PreCheck:     func() { testAccPreCheck(t) },
+		Providers:    testAccProviders,
+		CheckDestroy: testAccQueueCheckDestroy(&queueInfo),
+		Steps: []resource.TestStep{
+			resource.TestStep{
+				Config: testAccQueueConfig_jsonArguments,
 				Check: testAccQueueCheck(
 					"rabbitmq_queue.test", &queueInfo,
 				),
@@ -98,5 +115,40 @@ resource "rabbitmq_queue" "test" {
     settings {
         durable = false
         auto_delete = true
+    }
+}`
+
+const testAccQueueConfig_jsonArguments = `
+variable "arguments" {
+  default = <<EOF
+{
+  "x-message-ttl": 5000,
+  "foo": "bar",
+  "baz": 50
+}
+EOF
+}
+
+resource "rabbitmq_vhost" "test" {
+    name = "test"
+}
+
+resource "rabbitmq_permissions" "guest" {
+    user = "guest"
+    vhost = "${rabbitmq_vhost.test.name}"
+    permissions {
+        configure = ".*"
+        write = ".*"
+        read = ".*"
+    }
+}
+
+resource "rabbitmq_queue" "test" {
+    name = "test"
+    vhost = "${rabbitmq_permissions.guest.vhost}"
+    settings {
+        durable = false
+        auto_delete = true
+        json_arguments = "${var.arguments}"
     }
 }`

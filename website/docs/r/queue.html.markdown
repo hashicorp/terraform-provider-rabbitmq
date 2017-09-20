@@ -12,6 +12,8 @@ The ``rabbitmq_queue`` resource creates and manages a queue.
 
 ## Example Usage
 
+### Basic Example
+
 ```hcl
 resource "rabbitmq_vhost" "test" {
   name = "test"
@@ -39,6 +41,44 @@ resource "rabbitmq_queue" "test" {
 }
 ```
 
+### Example With JSON Arguments
+
+```hcl
+variable "arguments" {
+  default = <<EOF
+{
+  "x-message-ttl": 5000
+}
+EOF
+}
+
+resource "rabbitmq_vhost" "test" {
+  name = "test"
+}
+
+resource "rabbitmq_permissions" "guest" {
+  user  = "guest"
+  vhost = "${rabbitmq_vhost.test.name}"
+
+  permissions {
+    configure = ".*"
+    write     = ".*"
+    read      = ".*"
+  }
+}
+
+resource "rabbitmq_queue" "test" {
+  name  = "test"
+  vhost = "${rabbitmq_permissions.guest.vhost}"
+
+  settings {
+    durable     = false
+    auto_delete = true
+    json_arguments = "${var.arguments}"
+  }
+}
+```
+
 ## Argument Reference
 
 The following arguments are supported:
@@ -59,6 +99,12 @@ The `settings` block supports:
   consumers have unsubscribed.
 
 * `arguments` - (Optional) Additional key/value settings for the queue.
+  All values will be sent to RabbitMQ as a string. If you require non-string
+  values, use `json_arguments`.
+
+* `json_arguments` - (Optional) A nested JSON string which contains additional
+  settings for the queue. This is useful for when the arguments contain
+  non-string values.
 
 ## Attributes Reference
 
