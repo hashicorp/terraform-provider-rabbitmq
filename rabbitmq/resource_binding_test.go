@@ -176,5 +176,10 @@ resource "rabbitmq_binding" "test" {
     destination = "${rabbitmq_queue.test.name}"
     destination_type = "queue"
     routing_key = "ANYTHING.#"
+    arguments = {
+      key1 = "value1"
+      key2 = "value2"
+      key3 = "value3"
+    }
 }
 `
