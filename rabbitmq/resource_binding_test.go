@@ -134,7 +134,6 @@ resource "rabbitmq_binding" "test" {
     destination = "${rabbitmq_queue.test.name}"
     destination_type = "queue"
     routing_key = "#"
-    properties_key = "%23"
 }`
 
 const testAccBindingConfig_propertiesKey = `
@@ -177,6 +176,5 @@ resource "rabbitmq_binding" "test" {
     destination = "${rabbitmq_queue.test.name}"
     destination_type = "queue"
     routing_key = "ANYTHING.#"
-    properties_key = "ANYTHING.%23"
 }
 `

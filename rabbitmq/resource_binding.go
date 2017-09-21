@@ -5,9 +5,9 @@ import (
 	"log"
 	"strings"
 
-	"github.com/michaelklishin/rabbit-hole"
-
 	"github.com/hashicorp/terraform/helper/schema"
+	"github.com/michaelklishin/rabbit-hole"
+	"net/url"
 )
 
 func resourceBinding() *schema.Resource {
@@ -44,12 +44,6 @@ func resourceBinding() *schema.Resource {
 				ForceNew: true,
 			},
 
-			"properties_key": &schema.Schema{
-				Type:     schema.TypeString,
-				Required: true,
-				ForceNew: true,
-			},
-
 			"routing_key": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -74,14 +68,16 @@ func CreateBinding(d *schema.ResourceData, meta interface{}) error {
 		Destination:     d.Get("destination").(string),
 		DestinationType: d.Get("destination_type").(string),
 		RoutingKey:      d.Get("routing_key").(string),
-		PropertiesKey:   d.Get("properties_key").(string),
 		Arguments:       d.Get("arguments").(map[string]interface{}),
 	}
 
-	if err := declareBinding(rmqc, vhost, bindingInfo); err != nil {
+	propertiesKey, err := declareBinding(rmqc, vhost, bindingInfo)
+	if err != nil {
 		return err
 	}
 
+	log.Printf("[DEBUG] RabbitMQ: Binding properties key: %s", propertiesKey)
+	bindingInfo.PropertiesKey = propertiesKey
 	name := fmt.Sprintf("%s/%s/%s/%s/%s", vhost, bindingInfo.Source, bindingInfo.Destination, bindingInfo.DestinationType, bindingInfo.PropertiesKey)
 	d.SetId(name)
 
@@ -177,19 +173,26 @@ func DeleteBinding(d *schema.ResourceData, meta interface{}) error {
 	return nil
 }
 
-func declareBinding(rmqc *rabbithole.Client, vhost string, bindingInfo rabbithole.BindingInfo) error {
-	log.Printf("[DEBUG] RabbitMQ: Attempting to declare binding for %s/%s/%s/%s/%s",
-		vhost, bindingInfo.Source, bindingInfo.Destination, bindingInfo.DestinationType, bindingInfo.PropertiesKey)
+func declareBinding(rmqc *rabbithole.Client, vhost string, bindingInfo rabbithole.BindingInfo) (string, error) {
+	log.Printf("[DEBUG] RabbitMQ: Attempting to declare binding for %s/%s/%s/%s",
+		vhost, bindingInfo.Source, bindingInfo.Destination, bindingInfo.DestinationType)
 
 	resp, err := rmqc.DeclareBinding(vhost, bindingInfo)
 	log.Printf("[DEBUG] RabbitMQ: Binding declare response: %#v", resp)
 	if err != nil {
-		return err
+		return "", err
 	}
 
 	if resp.StatusCode >= 400 {
-		return fmt.Errorf("Error declaring RabbitMQ binding: %s", resp.Status)
+		return "", fmt.Errorf("Error declaring RabbitMQ binding: %s", resp.Status)
 	}
 
-	return nil
+	location := strings.Split(resp.Header.Get("Location"), "/")
+	propertiesKey, err := url.PathUnescape(location[len(location)-1])
+
+	if err != nil {
+		return "", err
+	}
+
+	return propertiesKey, nil
 }
