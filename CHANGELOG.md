@@ -1,4 +1,13 @@
 ## 0.1.1 (Unreleased)
+
+BACKWARDS INCOMPATIBILITIES / NOTES:
+
+* Due to a bug discovered where bindings were not being correctly stored in state, `rabbitmq_bindings.properties_key` is now a read-only, computed field.
+
+FIXES:
+
+* Fix bindings not being saved to state [GH-8]
+
 ## 0.1.0 (June 21, 2017)
 
 NOTES:
