@@ -56,7 +56,6 @@ resource "rabbitmq_binding" "test" {
   destination      = "${rabbitmq_queue.test.name}"
   destination_type = "queue"
   routing_key      = "#"
-  properties_key   = "%23"
 }
 ```
 
@@ -72,15 +71,15 @@ The following arguments are supported:
 
 * `destination_type` - (Required) The type of destination (queue or exchange).
 
-* `properties_key` - (Required) A unique key to refer to the binding.
-
 * `routing_key` - (Optional) A routing key for the binding.
 
 * `arguments` - (Optional) Additional key/value arguments for the binding.
 
 ## Attributes Reference
 
-No further attributes are exported.
+In addition to all arguments above, the following attributes are exported:
+
+* `properties_key` - A unique key to refer to the binding.
 
 ## Import
 
