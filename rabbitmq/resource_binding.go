@@ -3,11 +3,11 @@ package rabbitmq
 import (
 	"fmt"
 	"log"
+	"net/url"
 	"strings"
 
 	"github.com/hashicorp/terraform/helper/schema"
 	"github.com/michaelklishin/rabbit-hole"
-	"net/url"
 )
 
 func resourceBinding() *schema.Resource {
@@ -42,6 +42,11 @@ func resourceBinding() *schema.Resource {
 				Type:     schema.TypeString,
 				Required: true,
 				ForceNew: true,
+			},
+
+			"properties_key": &schema.Schema{
+				Type:     schema.TypeString,
+				Computed: true,
 			},
 
 			"routing_key": &schema.Schema{

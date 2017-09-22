@@ -77,7 +77,9 @@ The following arguments are supported:
 
 ## Attributes Reference
 
-No further attributes are exported.
+In addition to all arguments above, the following attributes are exported:
+
+* `properties_key` - A unique key to refer to the binding.
 
 ## Import
 
