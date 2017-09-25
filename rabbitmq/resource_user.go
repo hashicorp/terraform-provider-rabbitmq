@@ -47,19 +47,9 @@ func CreateUser(d *schema.ResourceData, meta interface{}) error {
 
 	name := d.Get("name").(string)
 
-	var tagList []string
-	for _, v := range d.Get("tags").([]interface{}) {
-		if v, ok := v.(string); ok {
-			tagList = append(tagList, v)
-		}
-	}
-
 	userSettings := rabbithole.UserSettings{
 		Password: d.Get("password").(string),
-	}
-
-	if len(tagList) > 0 {
-		userSettings.Tags = strings.Join(tagList, ",")
+		Tags:     userTagsToString(d),
 	}
 
 	log.Printf("[DEBUG] RabbitMQ: Attempting to create user %s", name)
@@ -105,10 +95,12 @@ func UpdateUser(d *schema.ResourceData, meta interface{}) error {
 	name := d.Id()
 
 	if d.HasChange("password") {
-		_, newPassword := d.GetChange("password")
+		tags := userTagsToString(d)
+		password := d.Get("password").(string)
 
 		userSettings := rabbithole.UserSettings{
-			Password: newPassword.(string),
+			Password: password,
+			Tags:     tags,
 		}
 
 		log.Printf("[DEBUG] RabbitMQ: Attempting to update password for %s", name)
@@ -126,19 +118,8 @@ func UpdateUser(d *schema.ResourceData, meta interface{}) error {
 	}
 
 	if d.HasChange("tags") {
-		_, newTags := d.GetChange("tags")
-
-		var tagList []string
-		for _, v := range newTags.([]interface{}) {
-			if v, ok := v.(string); ok {
-				tagList = append(tagList, v)
-			}
-		}
-
 		userSettings := rabbithole.UserSettings{}
-		if len(tagList) > 0 {
-			userSettings.Tags = strings.Join(tagList, ",")
-		}
+		userSettings.Tags = userTagsToString(d)
 
 		log.Printf("[DEBUG] RabbitMQ: Attempting to update tags for %s", name)
 
@@ -179,4 +160,17 @@ func DeleteUser(d *schema.ResourceData, meta interface{}) error {
 	}
 
 	return nil
+}
+
+func userTagsToString(d *schema.ResourceData) string {
+	var tags string
+	tagList := []string{}
+	for _, v := range d.Get("tags").([]interface{}) {
+		if tag, ok := v.(string); ok {
+			tagList = append(tagList, tag)
+		}
+	}
+	tags = strings.Join(tagList, ",")
+
+	return tags
 }

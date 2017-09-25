@@ -91,6 +91,31 @@ func TestAccUser_noTags(t *testing.T) {
 	})
 }
 
+func TestAccUser_passwordChange(t *testing.T) {
+	var user string
+	resource.Test(t, resource.TestCase{
+		PreCheck:     func() { testAccPreCheck(t) },
+		Providers:    testAccProviders,
+		CheckDestroy: testAccUserCheckDestroy(user),
+		Steps: []resource.TestStep{
+			resource.TestStep{
+				Config: testAccUserConfig_passwordChange_1,
+				Check: resource.ComposeTestCheckFunc(
+					testAccUserCheck("rabbitmq_user.test", &user),
+					testAccUserCheckTagCount(&user, 2),
+				),
+			},
+			resource.TestStep{
+				Config: testAccUserConfig_passwordChange_2,
+				Check: resource.ComposeTestCheckFunc(
+					testAccUserCheck("rabbitmq_user.test", &user),
+					testAccUserCheckTagCount(&user, 2),
+				),
+			},
+		},
+	})
+}
+
 func testAccUserCheck(rn string, name *string) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
 		rs, ok := s.RootModule().Resources[rn]
@@ -199,4 +224,18 @@ resource "rabbitmq_user" "test" {
     name = "mctest"
     password = "foobar"
     tags = ["administrator"]
+}`
+
+const testAccUserConfig_passwordChange_1 = `
+resource "rabbitmq_user" "test" {
+    name = "mctest"
+    password = "foobar"
+    tags = ["administrator", "management"]
+}`
+
+const testAccUserConfig_passwordChange_2 = `
+resource "rabbitmq_user" "test" {
+    name = "mctest"
+    password = "foobarry"
+    tags = ["administrator", "management"]
 }`
