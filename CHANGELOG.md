@@ -7,6 +7,7 @@ BACKWARDS INCOMPATIBILITIES / NOTES:
 FIXES:
 
 * Fix bindings not being saved to state [GH-8]
+* Fix issue in `rabbitmq_user` where tags were removed when a password was changed [GH-7]
 
 ## 0.1.0 (June 21, 2017)
 
