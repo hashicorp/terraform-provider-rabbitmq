@@ -74,7 +74,7 @@ resource "rabbitmq_queue" "test" {
   settings {
     durable     = false
     auto_delete = true
-    json_arguments = "${var.arguments}"
+    arguments_json = "${var.arguments}"
   }
 }
 ```
@@ -100,9 +100,9 @@ The `settings` block supports:
 
 * `arguments` - (Optional) Additional key/value settings for the queue.
   All values will be sent to RabbitMQ as a string. If you require non-string
-  values, use `json_arguments`.
+  values, use `arguments_json`.
 
-* `json_arguments` - (Optional) A nested JSON string which contains additional
+* `arguments_json` - (Optional) A nested JSON string which contains additional
   settings for the queue. This is useful for when the arguments contain
   non-string values.
 

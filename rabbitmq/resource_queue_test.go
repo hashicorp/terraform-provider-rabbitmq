@@ -149,6 +149,6 @@ resource "rabbitmq_queue" "test" {
     settings {
         durable = false
         auto_delete = true
-        json_arguments = "${var.arguments}"
+        arguments_json = "${var.arguments}"
     }
 }`

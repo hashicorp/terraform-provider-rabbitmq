@@ -56,10 +56,10 @@ func resourceQueue() *schema.Resource {
 						"arguments": &schema.Schema{
 							Type:          schema.TypeMap,
 							Optional:      true,
-							ConflictsWith: []string{"settings.0.json_arguments"},
+							ConflictsWith: []string{"settings.0.arguments_json"},
 						},
 
-						"json_arguments": &schema.Schema{
+						"arguments_json": &schema.Schema{
 							Type:          schema.TypeString,
 							Optional:      true,
 							ValidateFunc:  validateJsonString,
@@ -84,16 +84,16 @@ func CreateQueue(d *schema.ResourceData, meta interface{}) error {
 		return fmt.Errorf("Unable to parse settings")
 	}
 
-	// If json_arguments is used, unmarshal it into a generic interface
+	// If arguments_json is used, unmarshal it into a generic interface
 	// and use it as the "arguments" key for the queue.
-	if v, ok := settingsMap["json_arguments"].(string); ok && v != "" {
+	if v, ok := settingsMap["arguments_json"].(string); ok && v != "" {
 		var arguments interface{}
 		err := json.Unmarshal([]byte(v), &arguments)
 		if err != nil {
 			return err
 		}
 
-		delete(settingsMap, "json_arguments")
+		delete(settingsMap, "arguments_json")
 		settingsMap["arguments"] = arguments
 	}
 
