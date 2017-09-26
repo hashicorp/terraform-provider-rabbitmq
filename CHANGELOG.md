@@ -1,4 +1,4 @@
-## 0.2.0 (Unreleased)
+## 0.2.0 (September 26, 2017)
 
 BACKWARDS INCOMPATIBILITIES / NOTES:
 
@@ -6,12 +6,12 @@ BACKWARDS INCOMPATIBILITIES / NOTES:
 
 IMPROVEMENTS:
 
-* Added `arguments_json` to `rabbitmq_queue`. This argument can accept a nested JSON string which can contain additional settings for the queue. This is useful for queue settings which have non-string values. [GH-6]
+* Added `arguments_json` to `rabbitmq_queue`. This argument can accept a nested JSON string which can contain additional settings for the queue. This is useful for queue settings which have non-string values. ([#6](https://github.com/terraform-providers/terraform-provider-rabbitmq/issues/6))
 
 FIXES:
 
-* Fix bindings not being saved to state [GH-8]
-* Fix issue in `rabbitmq_user` where tags were removed when a password was changed [GH-7]
+* Fix bindings not being saved to state ([#8](https://github.com/terraform-providers/terraform-provider-rabbitmq/issues/8))
+* Fix issue in `rabbitmq_user` where tags were removed when a password was changed ([#7](https://github.com/terraform-providers/terraform-provider-rabbitmq/issues/7))
 
 ## 0.1.0 (June 21, 2017)
 
