@@ -97,6 +97,11 @@ func ReadBinding(d *schema.ResourceData, meta interface{}) error {
 		return fmt.Errorf("Unable to determine binding ID")
 	}
 
+	// If the length of bindingId is 6, then a vhost of / was used.
+	if len(bindingId) == 6 {
+		bindingId = append(bindingId[:0], bindingId[1:]...)
+	}
+
 	vhost := bindingId[0]
 	source := bindingId[1]
 	destination := bindingId[2]
@@ -140,6 +145,11 @@ func DeleteBinding(d *schema.ResourceData, meta interface{}) error {
 	bindingId := strings.Split(d.Id(), "/")
 	if len(bindingId) < 5 {
 		return fmt.Errorf("Unable to determine binding ID")
+	}
+
+	// If the length of bindingId is 6, then a vhost of / was used.
+	if len(bindingId) == 6 {
+		bindingId = append(bindingId[:0], bindingId[1:]...)
 	}
 
 	vhost := bindingId[0]
