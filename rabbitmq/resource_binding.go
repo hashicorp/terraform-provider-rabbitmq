@@ -92,7 +92,9 @@ func CreateBinding(d *schema.ResourceData, meta interface{}) error {
 func ReadBinding(d *schema.ResourceData, meta interface{}) error {
 	rmqc := meta.(*rabbithole.Client)
 
+	log.Printf("[TRACE] RabbitMQ: read binding resource ID (pre-split): %s", d.Id())
 	bindingId := strings.Split(d.Id(), "/")
+	log.Printf("[DEBUG] RabbitMQ: binding ID: %#v", bindingId)
 	if len(bindingId) < 5 {
 		return fmt.Errorf("Unable to determine binding ID")
 	}
@@ -102,6 +104,8 @@ func ReadBinding(d *schema.ResourceData, meta interface{}) error {
 	destination := bindingId[2]
 	destinationType := bindingId[3]
 	propertiesKey := bindingId[4]
+	log.Printf("[DEBUG] RabbitMQ: Attempting to find binding for %s/%s/%s/%s/%s",
+		vhost, source, destination, destinationType, propertiesKey)
 
 	bindings, err := rmqc.ListBindingsIn(vhost)
 	if err != nil {
@@ -111,6 +115,7 @@ func ReadBinding(d *schema.ResourceData, meta interface{}) error {
 	log.Printf("[DEBUG] RabbitMQ: Bindings retrieved: %#v", bindings)
 	bindingFound := false
 	for _, binding := range bindings {
+		log.Printf("[TRACE] RabbitMQ: Assessing binding: %#v", binding)
 		if binding.Source == source && binding.Destination == destination && binding.DestinationType == destinationType && binding.PropertiesKey == propertiesKey {
 			log.Printf("[DEBUG] RabbitMQ: Found Binding: %#v", binding)
 			bindingFound = true
