@@ -64,6 +64,21 @@ func resourceBinding() *schema.Resource {
 	}
 }
 
+// Because slashes are used to separate different components when constructing binding IDs,
+// we need a way to ensure any components that include slashes can survive the round trip.
+// Percent-encoding is a straightforward way of doing so.
+// (reference: https://developer.mozilla.org/en-US/docs/Glossary/percent-encoding)
+
+func percentEncodeSlashes(s string) string {
+	// Encode any percent signs, then encode any forward slashes.
+	return strings.Replace(strings.Replace(s, "%", "%25", -1), "/", "%2F", -1)
+}
+
+func percentDecodeSlashes(s string) string {
+	// Decode any forward slashes, then decode any percent signs.
+	return strings.Replace(strings.Replace(s, "%2F", "/", -1), "%25", "%", -1)
+}
+
 func CreateBinding(d *schema.ResourceData, meta interface{}) error {
 	rmqc := meta.(*rabbithole.Client)
 
@@ -83,7 +98,7 @@ func CreateBinding(d *schema.ResourceData, meta interface{}) error {
 
 	log.Printf("[DEBUG] RabbitMQ: Binding properties key: %s", propertiesKey)
 	bindingInfo.PropertiesKey = propertiesKey
-	name := fmt.Sprintf("%s/%s/%s/%s/%s", vhost, bindingInfo.Source, bindingInfo.Destination, bindingInfo.DestinationType, bindingInfo.PropertiesKey)
+	name := fmt.Sprintf("%s/%s/%s/%s/%s", percentEncodeSlashes(vhost), bindingInfo.Source, bindingInfo.Destination, bindingInfo.DestinationType, bindingInfo.PropertiesKey)
 	d.SetId(name)
 
 	return ReadBinding(d, meta)
@@ -99,7 +114,7 @@ func ReadBinding(d *schema.ResourceData, meta interface{}) error {
 		return fmt.Errorf("Unable to determine binding ID")
 	}
 
-	vhost := bindingId[0]
+	vhost := percentDecodeSlashes(bindingId[0])
 	source := bindingId[1]
 	destination := bindingId[2]
 	destinationType := bindingId[3]
@@ -147,7 +162,7 @@ func DeleteBinding(d *schema.ResourceData, meta interface{}) error {
 		return fmt.Errorf("Unable to determine binding ID")
 	}
 
-	vhost := bindingId[0]
+	vhost := percentDecodeSlashes(bindingId[0])
 	source := bindingId[1]
 	destination := bindingId[2]
 	destinationType := bindingId[3]

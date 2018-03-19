@@ -28,6 +28,23 @@ func TestAccBinding_basic(t *testing.T) {
 	})
 }
 
+func TestAccBinding_slashEscaping(t *testing.T) {
+	var bindingInfo rabbithole.BindingInfo
+	resource.Test(t, resource.TestCase{
+		PreCheck:     func() { testAccPreCheck(t) },
+		Providers:    testAccProviders,
+		CheckDestroy: testAccBindingCheckDestroy(bindingInfo),
+		Steps: []resource.TestStep{
+			resource.TestStep{
+				Config: testAccBindingConfig_slashesAreOkay,
+				Check: testAccBindingCheck(
+					"rabbitmq_binding.test", &bindingInfo,
+				),
+			},
+		},
+	})
+}
+
 func TestAccBinding_propertiesKey(t *testing.T) {
 	var bindingInfo rabbithole.BindingInfo
 	resource.Test(t, resource.TestCase{
@@ -59,7 +76,7 @@ func testAccBindingCheck(rn string, bindingInfo *rabbithole.BindingInfo) resourc
 		rmqc := testAccProvider.Meta().(*rabbithole.Client)
 		bindingParts := strings.Split(rs.Primary.ID, "/")
 
-		bindings, err := rmqc.ListBindingsIn(bindingParts[0])
+		bindings, err := rmqc.ListBindingsIn(percentDecodeSlashes(bindingParts[0]))
 		if err != nil {
 			return fmt.Errorf("Error retrieving exchange: %s", err)
 		}
@@ -135,6 +152,54 @@ resource "rabbitmq_binding" "test" {
     destination_type = "queue"
     routing_key = "#"
 }`
+
+const testAccBindingConfig_slashesAreOkay = `
+resource "rabbitmq_vhost" "test" {
+    name = "/virtual//host///"
+}
+
+resource "rabbitmq_permissions" "guest" {
+    user = "guest"
+    vhost = "${rabbitmq_vhost.test.name}"
+    permissions {
+        configure = ".*"
+        write = ".*"
+        read = ".*"
+    }
+}
+
+resource "rabbitmq_exchange" "test" {
+    name = "test"
+    vhost = "${rabbitmq_permissions.guest.vhost}"
+    settings {
+        type = "topic"
+        durable = true
+        auto_delete = false
+    }
+}
+
+resource "rabbitmq_queue" "test" {
+    name = "test"
+    vhost = "${rabbitmq_permissions.guest.vhost}"
+    settings {
+        durable = true
+        auto_delete = false
+    }
+}
+
+resource "rabbitmq_binding" "test" {
+    source = "${rabbitmq_exchange.test.name}"
+    vhost = "${rabbitmq_permissions.guest.vhost}"
+    destination = "${rabbitmq_queue.test.name}"
+    destination_type = "queue"
+    routing_key = "///routing//key/"
+    arguments = {
+      key1 = "value1"
+      key2 = "value2"
+      key3 = "value3"
+    }
+}
+`
 
 const testAccBindingConfig_propertiesKey = `
 resource "rabbitmq_vhost" "test" {
