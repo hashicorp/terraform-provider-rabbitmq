@@ -104,7 +104,7 @@ func ReadBinding(d *schema.ResourceData, meta interface{}) error {
 	destination := bindingId[2]
 	destinationType := bindingId[3]
 	propertiesKey := bindingId[4]
-	log.Printf("[DEBUG] RabbitMQ: Attempting to find binding for %s/%s/%s/%s/%s",
+	log.Printf("[DEBUG] RabbitMQ: Attempting to find binding for: vhost=%s source=%s destination=%s destinationType=%s propertiesKey=%s",
 		vhost, source, destination, destinationType, propertiesKey)
 
 	bindings, err := rmqc.ListBindingsIn(vhost)
@@ -161,7 +161,7 @@ func DeleteBinding(d *schema.ResourceData, meta interface{}) error {
 		PropertiesKey:   propertiesKey,
 	}
 
-	log.Printf("[DEBUG] RabbitMQ: Attempting to delete binding for %s/%s/%s/%s/%s",
+	log.Printf("[DEBUG] RabbitMQ: Attempting to delete binding for: vhost=%s source=%s destination=%s destinationType=%s propertiesKey=%s",
 		vhost, source, destination, destinationType, propertiesKey)
 
 	resp, err := rmqc.DeleteBinding(vhost, bindingInfo)
@@ -184,7 +184,7 @@ func DeleteBinding(d *schema.ResourceData, meta interface{}) error {
 }
 
 func declareBinding(rmqc *rabbithole.Client, vhost string, bindingInfo rabbithole.BindingInfo) (string, error) {
-	log.Printf("[DEBUG] RabbitMQ: Attempting to declare binding for %s/%s/%s/%s",
+	log.Printf("[DEBUG] RabbitMQ: Attempting to declare binding for: vhost=%s source=%s destination=%s destinationType=%s",
 		vhost, bindingInfo.Source, bindingInfo.Destination, bindingInfo.DestinationType)
 
 	resp, err := rmqc.DeclareBinding(vhost, bindingInfo)
