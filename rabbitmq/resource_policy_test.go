@@ -108,6 +108,7 @@ resource "rabbitmq_policy" "test" {
         definition {
             ha-mode = "nodes"
             ha-params = "a,b,c"
+            max-length = 10000
         }
     }
 }`
