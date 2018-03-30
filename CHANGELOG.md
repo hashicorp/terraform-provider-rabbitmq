@@ -1,4 +1,9 @@
 ## 0.2.1 (Unreleased)
+
+IMPROVEMENTS:
+
+* Allow vhost names to contain slashes [GH-11]
+
 ## 0.2.0 (September 26, 2017)
 
 BACKWARDS INCOMPATIBILITIES / NOTES:
