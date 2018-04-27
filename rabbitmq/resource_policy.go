@@ -3,6 +3,7 @@ package rabbitmq
 import (
 	"fmt"
 	"log"
+	"strconv"
 	"strings"
 
 	"github.com/michaelklishin/rabbit-hole"
@@ -116,7 +117,10 @@ func ReadPolicy(d *schema.ResourceData, meta interface{}) error {
 
 	policyDefinition := make(map[string]interface{})
 	for key, value := range policy.Definition {
-		if v, ok := value.([]interface{}); ok {
+		switch v := value.(type) {
+		case float64:
+			value = strconv.FormatFloat(v, 'f', -1, 64)
+		case []interface{}:
 			var nodes []string
 			for _, node := range v {
 				if n, ok := node.(string); ok {
@@ -215,9 +219,21 @@ func putPolicy(rmqc *rabbithole.Client, vhost string, name string, policyMap map
 		// special case for ha-mode = nodes
 		if x, ok := v["ha-mode"]; ok && x == "nodes" {
 			var nodes rabbithole.NodeNames
-			nodes = strings.Split(v["ha-params"].(string), ",")
-			v["ha-params"] = nodes
+			if _, ok := v["ha-params"].(string); ok {
+				nodes = strings.Split(v["ha-params"].(string), ",")
+				v["ha-params"] = nodes
+			}
 		}
+
+		// special case for integers
+		for key, val := range v {
+			if x, ok := val.(string); ok {
+				if x, err := strconv.ParseInt(x, 10, 64); err == nil {
+					v[key] = x
+				}
+			}
+		}
+
 		policyDefinition := rabbithole.PolicyDefinition{}
 		policyDefinition = v
 		policy.Definition = policyDefinition
