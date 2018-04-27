@@ -1,8 +1,12 @@
-## 0.2.1 (Unreleased)
+## 1.0.0 (Unreleased)
 
 IMPROVEMENTS:
 
 * Allow vhost names to contain slashes [GH-11]
+
+FIXES:
+
+* Allow integer values for policy definitions [GH-13]
 
 ## 0.2.0 (September 26, 2017)
 
