@@ -1,12 +1,12 @@
-## 1.0.0 (Unreleased)
+## 1.0.0 (April 27, 2018)
 
 IMPROVEMENTS:
 
-* Allow vhost names to contain slashes [GH-11]
+* Allow vhost names to contain slashes ([#11](https://github.com/terraform-providers/terraform-provider-rabbitmq/issues/11))
 
 FIXES:
 
-* Allow integer values for policy definitions [GH-13]
+* Allow integer values for policy definitions ([#13](https://github.com/terraform-providers/terraform-provider-rabbitmq/issues/13))
 
 ## 0.2.0 (September 26, 2017)
 
