@@ -159,7 +159,7 @@ func UpdatePolicy(d *schema.ResourceData, meta interface{}) error {
 			return fmt.Errorf("Unable to parse policy")
 		}
 
-		if err := putPolicy(rmqc, user, vhost, policyMap); err != nil {
+		if err := putPolicy(rmqc, vhost, user, policyMap); err != nil {
 			return err
 		}
 	}
