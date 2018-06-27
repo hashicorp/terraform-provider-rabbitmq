@@ -1,4 +1,9 @@
 ## 1.0.1 (Unreleased)
+
+FIXES
+
+* Fixed issue preventing policies from updating [GH-18]
+
 ## 1.0.0 (April 27, 2018)
 
 IMPROVEMENTS:
