@@ -8,6 +8,7 @@ import (
 
 	"github.com/michaelklishin/rabbit-hole"
 
+	"github.com/hashicorp/terraform/helper/resource"
 	"github.com/hashicorp/terraform/helper/schema"
 )
 
@@ -97,14 +98,15 @@ func CreateQueue(d *schema.ResourceData, meta interface{}) error {
 		settingsMap["arguments"] = arguments
 	}
 
-	if err := declareQueue(rmqc, vhost, name, settingsMap); err != nil {
-		return err
-	}
+	return resource.Retry(d.Timeout(schema.TimeoutCreate), func() *resource.RetryError {
+		if err := declareQueue(rmqc, vhost, name, settingsMap); err != nil {
+			return resource.RetryableError(fmt.Errorf("expected queue to be created but received error: %s", err))
+		}
 
-	id := fmt.Sprintf("%s@%s", name, vhost)
-	d.SetId(id)
-
-	return ReadQueue(d, meta)
+		id := fmt.Sprintf("%s@%s", name, vhost)
+		d.SetId(id)
+		return resource.NonRetryableError(ReadQueue(d, meta))
+	})
 }
 
 func ReadQueue(d *schema.ResourceData, meta interface{}) error {

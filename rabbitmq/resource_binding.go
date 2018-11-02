@@ -6,6 +6,7 @@ import (
 	"net/url"
 	"strings"
 
+	"github.com/hashicorp/terraform/helper/resource"
 	"github.com/hashicorp/terraform/helper/schema"
 	"github.com/michaelklishin/rabbit-hole"
 )
@@ -76,17 +77,18 @@ func CreateBinding(d *schema.ResourceData, meta interface{}) error {
 		Arguments:       d.Get("arguments").(map[string]interface{}),
 	}
 
-	propertiesKey, err := declareBinding(rmqc, vhost, bindingInfo)
-	if err != nil {
-		return err
-	}
+	return resource.Retry(d.Timeout(schema.TimeoutCreate), func() *resource.RetryError {
+		propertiesKey, err := declareBinding(rmqc, vhost, bindingInfo)
+		if err != nil {
+			return resource.RetryableError(fmt.Errorf("expected binding to be created but received error: %s", err))
+		}
 
-	log.Printf("[DEBUG] RabbitMQ: Binding properties key: %s", propertiesKey)
-	bindingInfo.PropertiesKey = propertiesKey
-	name := fmt.Sprintf("%s/%s/%s/%s/%s", percentEncodeSlashes(vhost), bindingInfo.Source, bindingInfo.Destination, bindingInfo.DestinationType, bindingInfo.PropertiesKey)
-	d.SetId(name)
-
-	return ReadBinding(d, meta)
+		log.Printf("[DEBUG] RabbitMQ: Binding properties key: %s", propertiesKey)
+		bindingInfo.PropertiesKey = propertiesKey
+		name := fmt.Sprintf("%s/%s/%s/%s/%s", percentEncodeSlashes(vhost), bindingInfo.Source, bindingInfo.Destination, bindingInfo.DestinationType, bindingInfo.PropertiesKey)
+		d.SetId(name)
+		return resource.NonRetryableError(ReadBinding(d, meta))
+	})
 }
 
 func ReadBinding(d *schema.ResourceData, meta interface{}) error {

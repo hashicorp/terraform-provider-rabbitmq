@@ -7,6 +7,7 @@ import (
 
 	"github.com/michaelklishin/rabbit-hole"
 
+	"github.com/hashicorp/terraform/helper/resource"
 	"github.com/hashicorp/terraform/helper/schema"
 )
 
@@ -80,14 +81,15 @@ func CreateExchange(d *schema.ResourceData, meta interface{}) error {
 		return fmt.Errorf("Unable to parse settings")
 	}
 
-	if err := declareExchange(rmqc, vhost, name, settingsMap); err != nil {
-		return err
-	}
+	return resource.Retry(d.Timeout(schema.TimeoutCreate), func() *resource.RetryError {
+		if err := declareExchange(rmqc, vhost, name, settingsMap); err != nil {
+			return resource.RetryableError(fmt.Errorf("expected exchange to be created but received error: %s", err))
+		}
 
-	id := fmt.Sprintf("%s@%s", name, vhost)
-	d.SetId(id)
-
-	return ReadExchange(d, meta)
+		id := fmt.Sprintf("%s@%s", name, vhost)
+		d.SetId(id)
+		return resource.NonRetryableError(ReadExchange(d, meta))
+	})
 }
 
 func ReadExchange(d *schema.ResourceData, meta interface{}) error {
