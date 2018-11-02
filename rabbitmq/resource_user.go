@@ -7,6 +7,7 @@ import (
 
 	"github.com/michaelklishin/rabbit-hole"
 
+	"github.com/hashicorp/terraform/helper/resource"
 	"github.com/hashicorp/terraform/helper/schema"
 )
 
@@ -54,19 +55,16 @@ func CreateUser(d *schema.ResourceData, meta interface{}) error {
 
 	log.Printf("[DEBUG] RabbitMQ: Attempting to create user %s", name)
 
-	resp, err := rmqc.PutUser(name, userSettings)
-	log.Printf("[DEBUG] RabbitMQ: user creation response: %#v", resp)
-	if err != nil {
-		return err
-	}
+	return resource.Retry(d.Timeout(schema.TimeoutCreate), func() *resource.RetryError {
+		resp, err := rmqc.PutUser(name, userSettings)
+		log.Printf("[DEBUG] RabbitMQ: user creation response: %#v", resp)
+		if err != nil {
+			return resource.RetryableError(fmt.Errorf("expected user to be created but received error: %s", err))
+		}
 
-	if resp.StatusCode >= 400 {
-		return fmt.Errorf("Error creating RabbitMQ user: %s", resp.Status)
-	}
-
-	d.SetId(name)
-
-	return ReadUser(d, meta)
+		d.SetId(name)
+		return resource.NonRetryableError(ReadUser(d, meta))
+	})
 }
 
 func ReadUser(d *schema.ResourceData, meta interface{}) error {

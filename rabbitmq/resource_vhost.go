@@ -6,6 +6,7 @@ import (
 
 	"github.com/michaelklishin/rabbit-hole"
 
+	"github.com/hashicorp/terraform/helper/resource"
 	"github.com/hashicorp/terraform/helper/schema"
 )
 
@@ -35,15 +36,16 @@ func CreateVhost(d *schema.ResourceData, meta interface{}) error {
 
 	log.Printf("[DEBUG] RabbitMQ: Attempting to create vhost %s", vhost)
 
-	resp, err := rmqc.PutVhost(vhost, rabbithole.VhostSettings{})
-	log.Printf("[DEBUG] RabbitMQ: vhost creation response: %#v", resp)
-	if err != nil {
-		return err
-	}
+	return resource.Retry(d.Timeout(schema.TimeoutCreate), func() *resource.RetryError {
+		resp, err := rmqc.PutVhost(vhost, rabbithole.VhostSettings{})
+		log.Printf("[DEBUG] RabbitMQ: vhost creation response: %#v", resp)
+		if err != nil {
+			return resource.RetryableError(fmt.Errorf("expected vhost to be created but received error: %s", err))
+		}
 
-	d.SetId(vhost)
-
-	return ReadVhost(d, meta)
+		d.SetId(vhost)
+		return resource.NonRetryableError(ReadVhost(d, meta))
+	})
 }
 
 func ReadVhost(d *schema.ResourceData, meta interface{}) error {
