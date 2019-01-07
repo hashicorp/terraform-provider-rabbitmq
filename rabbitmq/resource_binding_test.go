@@ -18,7 +18,7 @@ func TestAccBinding_basic(t *testing.T) {
 		Providers:    testAccProviders,
 		CheckDestroy: testAccBindingCheckDestroy(bindingInfo),
 		Steps: []resource.TestStep{
-			resource.TestStep{
+			{
 				Config: testAccBindingConfig_basic,
 				Check: testAccBindingCheck(
 					"rabbitmq_binding.test", &bindingInfo,
@@ -35,7 +35,7 @@ func TestAccBinding_slashEscaping(t *testing.T) {
 		Providers:    testAccProviders,
 		CheckDestroy: testAccBindingCheckDestroy(bindingInfo),
 		Steps: []resource.TestStep{
-			resource.TestStep{
+			{
 				Config: testAccBindingConfig_slashesAreOkay,
 				Check: testAccBindingCheck(
 					"rabbitmq_binding.test", &bindingInfo,
@@ -52,7 +52,7 @@ func TestAccBinding_propertiesKey(t *testing.T) {
 		Providers:    testAccProviders,
 		CheckDestroy: testAccBindingCheckDestroy(bindingInfo),
 		Steps: []resource.TestStep{
-			resource.TestStep{
+			{
 				Config: testAccBindingConfig_propertiesKey,
 				Check: testAccBindingCheck(
 					"rabbitmq_binding.test", &bindingInfo,

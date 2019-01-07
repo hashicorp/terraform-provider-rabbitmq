@@ -18,13 +18,13 @@ func TestAccUser_basic(t *testing.T) {
 		Providers:    testAccProviders,
 		CheckDestroy: testAccUserCheckDestroy(user),
 		Steps: []resource.TestStep{
-			resource.TestStep{
+			{
 				Config: testAccUserConfig_basic,
 				Check: testAccUserCheck(
 					"rabbitmq_user.test", &user,
 				),
 			},
-			resource.TestStep{
+			{
 				Config: testAccUserConfig_update,
 				Check: testAccUserCheck(
 					"rabbitmq_user.test", &user,
@@ -41,21 +41,21 @@ func TestAccUser_emptyTag(t *testing.T) {
 		Providers:    testAccProviders,
 		CheckDestroy: testAccUserCheckDestroy(user),
 		Steps: []resource.TestStep{
-			resource.TestStep{
+			{
 				Config: testAccUserConfig_emptyTag_1,
 				Check: resource.ComposeTestCheckFunc(
 					testAccUserCheck("rabbitmq_user.test", &user),
 					testAccUserCheckTagCount(&user, 0),
 				),
 			},
-			resource.TestStep{
+			{
 				Config: testAccUserConfig_emptyTag_2,
 				Check: resource.ComposeTestCheckFunc(
 					testAccUserCheck("rabbitmq_user.test", &user),
 					testAccUserCheckTagCount(&user, 1),
 				),
 			},
-			resource.TestStep{
+			{
 				Config: testAccUserConfig_emptyTag_1,
 				Check: resource.ComposeTestCheckFunc(
 					testAccUserCheck("rabbitmq_user.test", &user),
@@ -73,14 +73,14 @@ func TestAccUser_noTags(t *testing.T) {
 		Providers:    testAccProviders,
 		CheckDestroy: testAccUserCheckDestroy(user),
 		Steps: []resource.TestStep{
-			resource.TestStep{
+			{
 				Config: testAccUserConfig_noTags_1,
 				Check: resource.ComposeTestCheckFunc(
 					testAccUserCheck("rabbitmq_user.test", &user),
 					testAccUserCheckTagCount(&user, 0),
 				),
 			},
-			resource.TestStep{
+			{
 				Config: testAccUserConfig_noTags_2,
 				Check: resource.ComposeTestCheckFunc(
 					testAccUserCheck("rabbitmq_user.test", &user),
@@ -98,14 +98,14 @@ func TestAccUser_passwordChange(t *testing.T) {
 		Providers:    testAccProviders,
 		CheckDestroy: testAccUserCheckDestroy(user),
 		Steps: []resource.TestStep{
-			resource.TestStep{
+			{
 				Config: testAccUserConfig_passwordChange_1,
 				Check: resource.ComposeTestCheckFunc(
 					testAccUserCheck("rabbitmq_user.test", &user),
 					testAccUserCheckTagCount(&user, 2),
 				),
 			},
-			resource.TestStep{
+			{
 				Config: testAccUserConfig_passwordChange_2,
 				Check: resource.ComposeTestCheckFunc(
 					testAccUserCheck("rabbitmq_user.test", &user),
