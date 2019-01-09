@@ -18,7 +18,7 @@ func TestAccQueue_basic(t *testing.T) {
 		Providers:    testAccProviders,
 		CheckDestroy: testAccQueueCheckDestroy(&queueInfo),
 		Steps: []resource.TestStep{
-			resource.TestStep{
+			{
 				Config: testAccQueueConfig_basic,
 				Check: testAccQueueCheck(
 					"rabbitmq_queue.test", &queueInfo,
@@ -35,7 +35,7 @@ func TestAccQueue_jsonArguments(t *testing.T) {
 		Providers:    testAccProviders,
 		CheckDestroy: testAccQueueCheckDestroy(&queueInfo),
 		Steps: []resource.TestStep{
-			resource.TestStep{
+			{
 				Config: testAccQueueConfig_jsonArguments,
 				Check: testAccQueueCheck(
 					"rabbitmq_queue.test", &queueInfo,

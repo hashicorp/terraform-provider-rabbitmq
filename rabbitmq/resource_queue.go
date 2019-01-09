@@ -21,45 +21,45 @@ func resourceQueue() *schema.Resource {
 		},
 
 		Schema: map[string]*schema.Schema{
-			"name": &schema.Schema{
+			"name": {
 				Type:     schema.TypeString,
 				Required: true,
 				ForceNew: true,
 			},
 
-			"vhost": &schema.Schema{
+			"vhost": {
 				Type:     schema.TypeString,
 				Optional: true,
 				Default:  "/",
 				ForceNew: true,
 			},
 
-			"settings": &schema.Schema{
+			"settings": {
 				Type:     schema.TypeList,
 				Required: true,
 				ForceNew: true,
 				MaxItems: 1,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
-						"durable": &schema.Schema{
+						"durable": {
 							Type:     schema.TypeBool,
 							Optional: true,
 							Default:  false,
 						},
 
-						"auto_delete": &schema.Schema{
+						"auto_delete": {
 							Type:     schema.TypeBool,
 							Optional: true,
 							Default:  false,
 						},
 
-						"arguments": &schema.Schema{
+						"arguments": {
 							Type:          schema.TypeMap,
 							Optional:      true,
 							ConflictsWith: []string{"settings.0.arguments_json"},
 						},
 
-						"arguments_json": &schema.Schema{
+						"arguments_json": {
 							Type:          schema.TypeString,
 							Optional:      true,
 							ValidateFunc:  validateJsonString,
