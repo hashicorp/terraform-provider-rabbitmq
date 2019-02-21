@@ -9,3 +9,5 @@ require (
 	github.com/smartystreets/assertions v0.0.0-20190215210624-980c5ac6f3ac // indirect
 	github.com/streadway/amqp v0.0.0-20190214183023-884228600bc9 // indirect
 )
+
+replace github.com/michaelklishin/rabbit-hole => github.com/radeksimko/rabbit-hole v1.5.1-0.20190221165828-0da7f439be4a
