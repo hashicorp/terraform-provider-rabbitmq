@@ -7,10 +7,10 @@ import (
 	"io/ioutil"
 	"net/http"
 
-	"github.com/michaelklishin/rabbit-hole"
-
+	"github.com/hashicorp/terraform/helper/logging"
 	"github.com/hashicorp/terraform/helper/schema"
 	"github.com/hashicorp/terraform/terraform"
+	"github.com/michaelklishin/rabbit-hole"
 )
 
 func Provider() terraform.ResourceProvider {
@@ -112,8 +112,11 @@ func providerConfigure(d *schema.ResourceData) (interface{}, error) {
 		tlsConfig.InsecureSkipVerify = true
 	}
 
+	t := &http.Transport{TLSClientConfig: tlsConfig}
+
+	transport := logging.NewTransport("RabbitMQ", t)
+
 	// Connect to RabbitMQ management interface
-	transport := &http.Transport{TLSClientConfig: tlsConfig}
 	rmqc, err := rabbithole.NewTLSClient(endpoint, username, password, transport)
 	if err != nil {
 		return nil, err
