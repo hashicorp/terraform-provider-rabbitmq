@@ -2,7 +2,7 @@ module github.com/terraform-providers/terraform-provider-rabbitmq
 
 require (
 	github.com/hashicorp/terraform-plugin-sdk v1.0.0
-	github.com/michaelklishin/rabbit-hole v1.5.0
+	github.com/michaelklishin/rabbit-hole v1.6.0-rc.1
 	github.com/streadway/amqp v0.0.0-20190214183023-884228600bc9 // indirect
 )
 
