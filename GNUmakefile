@@ -34,7 +34,7 @@ fmtcheck:
 errcheck:
 	@sh -c "'$(CURDIR)/scripts/errcheck.sh'"
 
-vendor-status:mak
+vendor-status:
 	@govendor status
 
 test-compile:
