@@ -6,7 +6,7 @@ import (
 	"log"
 	"strings"
 
-	"github.com/michaelklishin/rabbit-hole"
+	rabbithole "github.com/michaelklishin/rabbit-hole"
 
 	"github.com/hashicorp/terraform/helper/schema"
 )
@@ -87,7 +87,7 @@ func CreateQueue(d *schema.ResourceData, meta interface{}) error {
 	// If arguments_json is used, unmarshal it into a generic interface
 	// and use it as the "arguments" key for the queue.
 	if v, ok := settingsMap["arguments_json"].(string); ok && v != "" {
-		var arguments interface{}
+		var arguments map[string]interface{}
 		err := json.Unmarshal([]byte(v), &arguments)
 		if err != nil {
 			return err
@@ -135,9 +135,7 @@ func ReadQueue(d *schema.ResourceData, meta interface{}) error {
 	e["arguments"] = queueSettings.Arguments
 	queue[0] = e
 
-	d.Set("settings", queue)
-
-	return nil
+	return d.Set("settings", queue)
 }
 
 func DeleteQueue(d *schema.ResourceData, meta interface{}) error {
