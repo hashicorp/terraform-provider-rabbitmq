@@ -6,7 +6,7 @@ import (
 	"log"
 	"strings"
 
-	"github.com/michaelklishin/rabbit-hole"
+	rabbithole "github.com/michaelklishin/rabbit-hole"
 
 	"github.com/hashicorp/terraform/helper/schema"
 )
@@ -135,9 +135,7 @@ func ReadQueue(d *schema.ResourceData, meta interface{}) error {
 	e["arguments"] = queueSettings.Arguments
 	queue[0] = e
 
-	d.Set("settings", queue)
-
-	return nil
+	return d.Set("settings", queue)
 }
 
 func DeleteQueue(d *schema.ResourceData, meta interface{}) error {
