@@ -132,7 +132,24 @@ func ReadQueue(d *schema.ResourceData, meta interface{}) error {
 	e := make(map[string]interface{})
 	e["durable"] = queueSettings.Durable
 	e["auto_delete"] = queueSettings.AutoDelete
-	e["arguments"] = queueSettings.Arguments
+
+	// The user may have used either `arguments` or `arguments_json` to populate this originally.
+	// We need to preserve that decision here so that a subsequent Terraform plan for the
+	// same configuration wouldn't produce an errant diff that moves the value from one
+	// to the other without changing any values.
+	// These two arguments are mutually exclusive due to ConflictsWith in the schema.
+	// `arguments` cannot receive any value other than a string, therefore any
+	// detection of another type encodes and sets `arguments_json`
+	if nonStringInArguments(queueSettings.Arguments) {
+		bytes, err := json.Marshal(queueSettings.Arguments)
+		if err != nil {
+			return err
+		}
+		e["arguments_json"] = string(bytes)
+	} else {
+		e["arguments"] = queueSettings.Arguments
+	}
+
 	queue[0] = e
 
 	return d.Set("settings", queue)
@@ -197,4 +214,16 @@ func declareQueue(rmqc *rabbithole.Client, vhost string, name string, settingsMa
 	}
 
 	return nil
+}
+
+func nonStringInArguments(args map[string]interface{}) bool {
+	for _, val := range args {
+		switch val.(type) {
+		case string:
+			continue
+		default:
+			return true
+		}
+	}
+	return false
 }
