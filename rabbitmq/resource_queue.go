@@ -6,9 +6,9 @@ import (
 	"log"
 	"strings"
 
-	rabbithole "github.com/michaelklishin/rabbit-hole"
-
 	"github.com/hashicorp/terraform/helper/schema"
+	"github.com/hashicorp/terraform/helper/structure"
+	rabbithole "github.com/michaelklishin/rabbit-hole"
 )
 
 func resourceQueue() *schema.Resource {
@@ -60,10 +60,11 @@ func resourceQueue() *schema.Resource {
 						},
 
 						"arguments_json": {
-							Type:          schema.TypeString,
-							Optional:      true,
-							ValidateFunc:  validateJsonString,
-							ConflictsWith: []string{"settings.0.arguments"},
+							Type:             schema.TypeString,
+							Optional:         true,
+							ValidateFunc:     validateJsonString,
+							ConflictsWith:    []string{"settings.0.arguments"},
+							DiffSuppressFunc: structure.SuppressJsonDiff,
 						},
 					},
 				},
@@ -138,9 +139,10 @@ func ReadQueue(d *schema.ResourceData, meta interface{}) error {
 	// same configuration wouldn't produce an errant diff that moves the value from one
 	// to the other without changing any values.
 	// These two arguments are mutually exclusive due to ConflictsWith in the schema.
-	// `arguments` cannot receive any value other than a string, therefore any
-	// detection of another type encodes and sets `arguments_json`
-	if nonStringInArguments(queueSettings.Arguments) {
+	// `arguments` cannot receive any values other than a string (d.Set will fail), therefore any drift
+	// containing nonstring values AND the configuration originated from `arguments`,
+	// will now be encoded to `arguments_json`.
+	if _, ok := d.GetOk("settings.0.arguments_json"); ok || nonStringInArguments(queueSettings.Arguments) {
 		bytes, err := json.Marshal(queueSettings.Arguments)
 		if err != nil {
 			return err
