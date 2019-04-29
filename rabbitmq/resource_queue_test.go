@@ -29,15 +29,17 @@ func TestAccQueue_basic(t *testing.T) {
 
 func TestAccQueue_jsonArguments(t *testing.T) {
 	var queueInfo rabbithole.QueueInfo
+	js := `{"x-message-ttl": 5000,"foo": "bar","baz": 50}`
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
 		Providers:    testAccProviders,
 		CheckDestroy: testAccQueueCheckDestroy(&queueInfo),
 		Steps: []resource.TestStep{
 			{
-				Config: testAccQueueConfig_jsonArguments,
-				Check: testAccQueueCheck(
-					"rabbitmq_queue.test", &queueInfo,
+				Config: testAccQueueConfig_jsonArguments(js),
+				Check: resource.ComposeTestCheckFunc(
+					testAccQueueCheck("rabbitmq_queue.test", &queueInfo),
+					testAccQueueCheckJsonArguments("rabbitmq_queue.test", &queueInfo, js)
 				),
 			},
 		},
@@ -71,6 +73,31 @@ func testAccQueueCheck(rn string, queueInfo *rabbithole.QueueInfo) resource.Test
 		}
 
 		return fmt.Errorf("Unable to find queue %s", rn)
+	}
+}
+
+func testAccQueueCheckJsonArguments(rn string, queueInfo *rabbithole.QueueInfo, js string) resource.TestCheckFunc {
+	return func(s *terraform.State) error {
+		var configMap map[string]interface{}
+		if err := json.Unmarshal([]byte(js), &configMap); err != nil {
+			return err
+		}
+		if !reflect.DeepEqual(configMap, queueInfo.Arguments) {
+			return fmt.Errorf("Passed arguments does not match queue arguments")
+		}
+
+		rs, ok := s.RootModule().Resources[rn]
+		if !ok {
+			return fmt.Errorf("resource not found: %s", rn)
+		}
+		if err := json.Unmarshal([]byte(rs.Primary.Attributes["settings.0.arguments_json"]), &configMap); err != nil {
+			return err
+		}
+		if !reflect.DeepEqual(configMap, queueInfo.Arguments) {
+			return fmt.Errorf("Arguments in state does not match queue arguments")
+		}
+
+		return nil
 	}
 }
 
@@ -117,37 +144,35 @@ resource "rabbitmq_queue" "test" {
     }
 }`
 
-const testAccQueueConfig_jsonArguments = `
+func testAccQueueConfig_jsonArguments(j string) string {
+	return fmt.Sprintf(`
 variable "arguments" {
-  default = <<EOF
-{
-  "x-message-ttl": 5000,
-  "foo": "bar",
-  "baz": 50
-}
+	default = <<EOF
+%s
 EOF
 }
 
 resource "rabbitmq_vhost" "test" {
-    name = "test"
+	name = "test"
 }
 
 resource "rabbitmq_permissions" "guest" {
-    user = "guest"
-    vhost = "${rabbitmq_vhost.test.name}"
-    permissions {
-        configure = ".*"
-        write = ".*"
-        read = ".*"
-    }
+	user = "guest"
+	vhost = "${rabbitmq_vhost.test.name}"
+	permissions {
+		configure = ".*"
+		write = ".*"
+		read = ".*"
+	}
 }
 
 resource "rabbitmq_queue" "test" {
-    name = "test"
-    vhost = "${rabbitmq_permissions.guest.vhost}"
-    settings {
-        durable = false
-        auto_delete = true
-        arguments_json = "${var.arguments}"
-    }
-}`
+	name = "test"
+	vhost = "${rabbitmq_permissions.guest.vhost}"
+	settings {
+		durable = false
+		auto_delete = true
+		arguments_json = "${var.arguments}"
+	}
+}`, j)
+}
