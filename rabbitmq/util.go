@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/appilon/terraform-plugin-sdk/structure"
 	"github.com/hashicorp/terraform/helper/schema"
+	"github.com/hashicorp/terraform/helper/structure"
 )
 
 func checkDeleted(d *schema.ResourceData, err error) error {
