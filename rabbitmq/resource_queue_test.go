@@ -1,7 +1,9 @@
 package rabbitmq
 
 import (
+	"encoding/json"
 	"fmt"
+	"reflect"
 	"strings"
 	"testing"
 
@@ -39,7 +41,7 @@ func TestAccQueue_jsonArguments(t *testing.T) {
 				Config: testAccQueueConfig_jsonArguments(js),
 				Check: resource.ComposeTestCheckFunc(
 					testAccQueueCheck("rabbitmq_queue.test", &queueInfo),
-					testAccQueueCheckJsonArguments("rabbitmq_queue.test", &queueInfo, js)
+					testAccQueueCheckJsonArguments("rabbitmq_queue.test", &queueInfo, js),
 				),
 			},
 		},
@@ -67,7 +69,7 @@ func testAccQueueCheck(rn string, queueInfo *rabbithole.QueueInfo) resource.Test
 
 		for _, queue := range queues {
 			if queue.Name == queueParts[0] && queue.Vhost == queueParts[1] {
-				queueInfo = &queue
+				*queueInfo = queue
 				return nil
 			}
 		}
@@ -106,7 +108,7 @@ func testAccQueueCheckDestroy(queueInfo *rabbithole.QueueInfo) resource.TestChec
 		rmqc := testAccProvider.Meta().(*rabbithole.Client)
 
 		queues, err := rmqc.ListQueuesIn(queueInfo.Vhost)
-		if err != nil {
+		if err != nil && !strings.Contains(err.Error(), "not found") {
 			return fmt.Errorf("Error retrieving queue: %s", err)
 		}
 
