@@ -5,10 +5,9 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/michaelklishin/rabbit-hole"
-
 	"github.com/hashicorp/terraform/helper/resource"
 	"github.com/hashicorp/terraform/terraform"
+	rabbithole "github.com/michaelklishin/rabbit-hole"
 )
 
 func TestAccQueue_basic(t *testing.T) {
