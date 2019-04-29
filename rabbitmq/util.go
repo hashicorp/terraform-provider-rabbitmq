@@ -1,11 +1,9 @@
 package rabbitmq
 
 import (
-	"fmt"
 	"strings"
 
 	"github.com/hashicorp/terraform/helper/schema"
-	"github.com/hashicorp/terraform/helper/structure"
 )
 
 func checkDeleted(d *schema.ResourceData, err error) error {
@@ -15,14 +13,6 @@ func checkDeleted(d *schema.ResourceData, err error) error {
 	}
 
 	return err
-}
-
-// pulled from terraform-provider-aws/aws/validators.go
-func validateJsonString(v interface{}, k string) (ws []string, errors []error) {
-	if _, err := structure.NormalizeJsonString(v); err != nil {
-		errors = append(errors, fmt.Errorf("%q contains invalid JSON: %s", k, err))
-	}
-	return
 }
 
 // Because slashes are used to separate different components when constructing binding IDs,
