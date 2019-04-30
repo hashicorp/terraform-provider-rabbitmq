@@ -3,6 +3,8 @@
 FIXES
 
 * Fixed issue preventing policies from updating [GH-18]
+* Fixed `arguments_json` in the queue resource, unfortunately it never worked and failed silently. A queue that receives arguments outside of terraform, where said arguments are not of type string, and was originally configured via `arguments` will be saved to `arguments_json`. This will present the user a diff but avoids a permanent error. [GH-26]
+* Provider has been switched to use go modules and bumps the Terraform SDK to v0.11 [GH-26]
 
 ## 1.0.0 (April 27, 2018)
 
