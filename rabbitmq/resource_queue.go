@@ -6,9 +6,10 @@ import (
 	"log"
 	"strings"
 
-	"github.com/michaelklishin/rabbit-hole"
-
 	"github.com/hashicorp/terraform/helper/schema"
+	"github.com/hashicorp/terraform/helper/structure"
+	"github.com/hashicorp/terraform/helper/validation"
+	rabbithole "github.com/michaelklishin/rabbit-hole"
 )
 
 func resourceQueue() *schema.Resource {
@@ -60,10 +61,11 @@ func resourceQueue() *schema.Resource {
 						},
 
 						"arguments_json": {
-							Type:          schema.TypeString,
-							Optional:      true,
-							ValidateFunc:  validateJsonString,
-							ConflictsWith: []string{"settings.0.arguments"},
+							Type:             schema.TypeString,
+							Optional:         true,
+							ValidateFunc:     validation.ValidateJsonString,
+							ConflictsWith:    []string{"settings.0.arguments"},
+							DiffSuppressFunc: structure.SuppressJsonDiff,
 						},
 					},
 				},
@@ -87,7 +89,7 @@ func CreateQueue(d *schema.ResourceData, meta interface{}) error {
 	// If arguments_json is used, unmarshal it into a generic interface
 	// and use it as the "arguments" key for the queue.
 	if v, ok := settingsMap["arguments_json"].(string); ok && v != "" {
-		var arguments interface{}
+		var arguments map[string]interface{}
 		err := json.Unmarshal([]byte(v), &arguments)
 		if err != nil {
 			return err
@@ -128,16 +130,32 @@ func ReadQueue(d *schema.ResourceData, meta interface{}) error {
 	d.Set("name", queueSettings.Name)
 	d.Set("vhost", queueSettings.Vhost)
 
-	queue := make([]map[string]interface{}, 1)
 	e := make(map[string]interface{})
 	e["durable"] = queueSettings.Durable
 	e["auto_delete"] = queueSettings.AutoDelete
-	e["arguments"] = queueSettings.Arguments
+
+	// The user may have used either `arguments` or `arguments_json` to populate this originally.
+	// We need to preserve that decision here so that a subsequent Terraform plan for the
+	// same configuration wouldn't produce an errant diff that moves the value from one
+	// to the other without changing any values.
+	// These two arguments are mutually exclusive due to ConflictsWith in the schema.
+	// `arguments` cannot receive any values other than a string (d.Set will fail), therefore any drift
+	// containing nonstring values AND the configuration originated from `arguments`,
+	// will now be encoded to `arguments_json`.
+	if _, ok := d.GetOk("settings.0.arguments_json"); ok || nonStringInArguments(queueSettings.Arguments) {
+		bytes, err := json.Marshal(queueSettings.Arguments)
+		if err != nil {
+			return err
+		}
+		e["arguments_json"] = string(bytes)
+	} else {
+		e["arguments"] = queueSettings.Arguments
+	}
+
+	queue := make([]map[string]interface{}, 1)
 	queue[0] = e
 
-	d.Set("settings", queue)
-
-	return nil
+	return d.Set("settings", queue)
 }
 
 func DeleteQueue(d *schema.ResourceData, meta interface{}) error {
@@ -199,4 +217,16 @@ func declareQueue(rmqc *rabbithole.Client, vhost string, name string, settingsMa
 	}
 
 	return nil
+}
+
+func nonStringInArguments(args map[string]interface{}) bool {
+	for _, val := range args {
+		switch val.(type) {
+		case string:
+			continue
+		default:
+			return true
+		}
+	}
+	return false
 }
