@@ -130,7 +130,6 @@ func ReadQueue(d *schema.ResourceData, meta interface{}) error {
 	d.Set("name", queueSettings.Name)
 	d.Set("vhost", queueSettings.Vhost)
 
-	queue := make([]map[string]interface{}, 1)
 	e := make(map[string]interface{})
 	e["durable"] = queueSettings.Durable
 	e["auto_delete"] = queueSettings.AutoDelete
@@ -153,6 +152,7 @@ func ReadQueue(d *schema.ResourceData, meta interface{}) error {
 		e["arguments"] = queueSettings.Arguments
 	}
 
+	queue := make([]map[string]interface{}, 1)
 	queue[0] = e
 
 	return d.Set("settings", queue)
