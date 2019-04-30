@@ -92,10 +92,11 @@ func testAccQueueCheckJsonArguments(rn string, queueInfo *rabbithole.QueueInfo, 
 		if !ok {
 			return fmt.Errorf("resource not found: %s", rn)
 		}
-		if err := json.Unmarshal([]byte(rs.Primary.Attributes["settings.0.arguments_json"]), &configMap); err != nil {
+		var configMap2 map[string]interface{}
+		if err := json.Unmarshal([]byte(rs.Primary.Attributes["settings.0.arguments_json"]), &configMap2); err != nil {
 			return err
 		}
-		if !reflect.DeepEqual(configMap, queueInfo.Arguments) {
+		if !reflect.DeepEqual(configMap2, queueInfo.Arguments) {
 			return fmt.Errorf("Arguments in state does not match queue arguments")
 		}
 
