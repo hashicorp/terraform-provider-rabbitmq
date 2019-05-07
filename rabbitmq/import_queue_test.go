@@ -9,6 +9,7 @@ import (
 )
 
 func TestAccQueue_importBasic(t *testing.T) {
+
 	resourceName := "rabbitmq_queue.test"
 	var queue rabbithole.QueueInfo
 

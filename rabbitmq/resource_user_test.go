@@ -34,6 +34,35 @@ func TestAccUser_basic(t *testing.T) {
 	})
 }
 
+func TestUpdateTags_password(t *testing.T) {
+	var user string
+	resource.Test(t, resource.TestCase{
+		PreCheck:     func() { testAccPreCheck(t) },
+		Providers:    testAccProviders,
+		CheckDestroy: testAccUserCheckDestroy(user),
+		Steps: []resource.TestStep{
+			{
+				Config: testUpdateTagsCreate,
+				Check: resource.ComposeTestCheckFunc(
+					testAccUserCheck(
+						"rabbitmq_user.test", &user,
+					),
+					testAccUserConnect("mctest", "foobar"),
+				),
+			},
+			{
+				Config: testUpdateTagsUpdate,
+				Check: resource.ComposeTestCheckFunc(
+					testAccUserCheck(
+						"rabbitmq_user.test", &user,
+					),
+					testAccUserConnect("mctest", "foobar"),
+				),
+			},
+		},
+	})
+}
+
 func TestAccUser_emptyTag(t *testing.T) {
 	var user string
 	resource.Test(t, resource.TestCase{
@@ -144,6 +173,21 @@ func testAccUserCheck(rn string, name *string) resource.TestCheckFunc {
 	}
 }
 
+func testAccUserConnect(username, password string) resource.TestCheckFunc {
+	return func(s *terraform.State) error {
+		client, err := rabbithole.NewClient("http://localhost:15672", username, password)
+		if err != nil {
+			return fmt.Errorf("could not create rmq client: %v", err)
+		}
+
+		_, err = client.Whoami()
+		if err != nil {
+			return fmt.Errorf("could not call whoami with username %s: %v", username, err)
+		}
+		return nil
+	}
+}
+
 func testAccUserCheckTagCount(name *string, tagCount int) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
 		rmqc := testAccProvider.Meta().(*rabbithole.Client)
@@ -197,6 +241,20 @@ resource "rabbitmq_user" "test" {
     name = "mctest"
     password = "foobarry"
     tags = ["management"]
+}`
+
+const testUpdateTagsCreate = `
+resource "rabbitmq_user" "test" {
+    name = "mctest"
+    password = "foobar"
+    tags = ["management"]
+}`
+
+const testUpdateTagsUpdate = `
+resource "rabbitmq_user" "test" {
+    name = "mctest"
+    password = "foobar"
+    tags = ["monitoring"]
 }`
 
 const testAccUserConfig_emptyTag_1 = `

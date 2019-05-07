@@ -109,8 +109,8 @@ func testAccQueueCheckDestroy(queueInfo *rabbithole.QueueInfo) resource.TestChec
 		rmqc := testAccProvider.Meta().(*rabbithole.Client)
 
 		queues, err := rmqc.ListQueuesIn(queueInfo.Vhost)
-		if err != nil && !strings.Contains(err.Error(), "not found") {
-			return fmt.Errorf("Error retrieving queue: %s", err)
+		if err != nil && !strings.Contains(strings.ToLower(err.Error()), "not found") {
+			return fmt.Errorf("Error retrieving queues: %s", err)
 		}
 
 		for _, queue := range queues {
