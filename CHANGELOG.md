@@ -1,10 +1,17 @@
-## 1.0.1 (Unreleased)
+## 1.1.0 (Unreleased)
 
-FIXES
+FIXES:
 
 * Fixed issue preventing policies from updating [GH-18]
+* Policy: rename user variable to name [GH-19]
 * Fixed `arguments_json` in the queue resource, unfortunately it never worked and failed silently. A queue that receives arguments outside of terraform, where said arguments are not of type string, and was originally configured via `arguments` will be saved to `arguments_json`. This will present the user a diff but avoids a permanent error. [GH-26]
+
+DEV IMPROVEMENTS:
+
+* Upgrade to Go 1.11 [GH-23]
 * Provider has been switched to use go modules and bumps the Terraform SDK to v0.11 [GH-26]
+* Makefile: add `website` and `website-test` targets [GH-15]
+* Upgrade `hashicorp/terraform` to v0.12.2 for latest Terraform 0.12 SDK [GH-34]
 
 ## 1.0.0 (April 27, 2018)
 
