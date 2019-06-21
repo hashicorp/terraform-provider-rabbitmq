@@ -38,7 +38,7 @@ resource "rabbitmq_policy" "test" {
     priority = 0
     apply_to = "all"
 
-    definition {
+    definition = {
       ha-mode = "all"
     }
   }
