@@ -47,7 +47,7 @@ The following arguments are supported:
 
 * `endpoint` - (Required) The HTTP URL of the management plugin on the
   RabbitMQ server. The RabbitMQ management plugin *must* be enabled in order
-  to use this provder. _Note_: This is not the IP address or hostname of the
+  to use this provider. _Note_: This is not the IP address or hostname of the
   RabbitMQ server that you would use to access RabbitMQ directly.
 * `username` - (Required) Username to use to authenticate with the server.
 * `password` - (Optional) Password for the given user.
