@@ -58,6 +58,7 @@ func resourceQueue() *schema.Resource {
 							Type:          schema.TypeMap,
 							Optional:      true,
 							ConflictsWith: []string{"settings.0.arguments_json"},
+							ForceNew:      true,
 						},
 
 						"arguments_json": {
@@ -66,6 +67,7 @@ func resourceQueue() *schema.Resource {
 							ValidateFunc:     validation.ValidateJsonString,
 							ConflictsWith:    []string{"settings.0.arguments"},
 							DiffSuppressFunc: structure.SuppressJsonDiff,
+							ForceNew:         true,
 						},
 					},
 				},
