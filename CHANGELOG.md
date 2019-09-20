@@ -1,8 +1,18 @@
-## 1.0.1 (Unreleased)
+## 1.2.0 (Unreleased)
+## 1.1.0 (June 21, 2019)
 
-FIXES
+FIXES:
 
-* Fixed issue preventing policies from updating [GH-18]
+* Fixed issue preventing policies from updating ([#18](https://github.com/terraform-providers/terraform-provider-rabbitmq/issues/18))
+* Policy: rename user variable to name ([#19](https://github.com/terraform-providers/terraform-provider-rabbitmq/issues/19))
+* Fixed `arguments_json` in the queue resource, unfortunately it never worked and failed silently. A queue that receives arguments outside of terraform, where said arguments are not of type string, and was originally configured via `arguments` will be saved to `arguments_json`. This will present the user a diff but avoids a permanent error. ([#26](https://github.com/terraform-providers/terraform-provider-rabbitmq/issues/26))
+
+DEV IMPROVEMENTS:
+
+* Upgrade to Go 1.11 ([#23](https://github.com/terraform-providers/terraform-provider-rabbitmq/issues/23))
+* Provider has been switched to use go modules and bumps the Terraform SDK to v0.11 ([#26](https://github.com/terraform-providers/terraform-provider-rabbitmq/issues/26))
+* Makefile: add `website` and `website-test` targets ([#15](https://github.com/terraform-providers/terraform-provider-rabbitmq/issues/15))
+* Upgrade `hashicorp/terraform` to v0.12.2 for latest Terraform 0.12 SDK ([#34](https://github.com/terraform-providers/terraform-provider-rabbitmq/issues/34))
 
 ## 1.0.0 (April 27, 2018)
 

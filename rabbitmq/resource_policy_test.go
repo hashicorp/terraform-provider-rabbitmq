@@ -105,7 +105,7 @@ resource "rabbitmq_policy" "test" {
         pattern = ".*"
         priority = 0
         apply_to = "all"
-        definition {
+        definition = {
             ha-mode = "nodes"
             ha-params = "a,b,c"
             max-length = 10000
@@ -135,7 +135,7 @@ resource "rabbitmq_policy" "test" {
         pattern = ".*"
         priority = 0
         apply_to = "all"
-        definition {
+        definition = {
             ha-mode = "all"
         }
     }
