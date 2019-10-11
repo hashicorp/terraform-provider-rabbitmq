@@ -5,7 +5,7 @@ import (
 	"log"
 	"strings"
 
-	"github.com/michaelklishin/rabbit-hole"
+	rabbithole "github.com/michaelklishin/rabbit-hole"
 
 	"github.com/hashicorp/terraform/helper/schema"
 )
@@ -95,12 +95,9 @@ func UpdateUser(d *schema.ResourceData, meta interface{}) error {
 	name := d.Id()
 
 	if d.HasChange("password") {
-		tags := userTagsToString(d)
-		password := d.Get("password").(string)
-
 		userSettings := rabbithole.UserSettings{
-			Password: password,
-			Tags:     tags,
+			Password: d.Get("password").(string),
+			Tags:     userTagsToString(d),
 		}
 
 		log.Printf("[DEBUG] RabbitMQ: Attempting to update password for %s", name)
@@ -118,8 +115,10 @@ func UpdateUser(d *schema.ResourceData, meta interface{}) error {
 	}
 
 	if d.HasChange("tags") {
-		userSettings := rabbithole.UserSettings{}
-		userSettings.Tags = userTagsToString(d)
+		userSettings := rabbithole.UserSettings{
+			Password: d.Get("password").(string),
+			Tags:     userTagsToString(d),
+		}
 
 		log.Printf("[DEBUG] RabbitMQ: Attempting to update tags for %s", name)
 
