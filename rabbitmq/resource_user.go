@@ -93,46 +93,24 @@ func UpdateUser(d *schema.ResourceData, meta interface{}) error {
 	rmqc := meta.(*rabbithole.Client)
 
 	name := d.Id()
+	tags := userTagsToString(d)
+	password := d.Get("password").(string)
 
-	if d.HasChange("password") {
-		tags := userTagsToString(d)
-		password := d.Get("password").(string)
-
-		userSettings := rabbithole.UserSettings{
-			Password: password,
-			Tags:     tags,
-		}
-
-		log.Printf("[DEBUG] RabbitMQ: Attempting to update password for %s", name)
-
-		resp, err := rmqc.PutUser(name, userSettings)
-		log.Printf("[DEBUG] RabbitMQ: Password update response: %#v", resp)
-		if err != nil {
-			return err
-		}
-
-		if resp.StatusCode >= 400 {
-			return fmt.Errorf("Error updating RabbitMQ user: %s", resp.Status)
-		}
-
+	userSettings := rabbithole.UserSettings{
+		Password: password,
+		Tags:     tags,
 	}
 
-	if d.HasChange("tags") {
-		userSettings := rabbithole.UserSettings{}
-		userSettings.Tags = userTagsToString(d)
+	log.Printf("[DEBUG] RabbitMQ: Attempting to update user %s", name)
 
-		log.Printf("[DEBUG] RabbitMQ: Attempting to update tags for %s", name)
+	resp, err := rmqc.PutUser(name, userSettings)
+	log.Printf("[DEBUG] RabbitMQ: User update response: %#v", resp)
+	if err != nil {
+		return err
+	}
 
-		resp, err := rmqc.PutUser(name, userSettings)
-		log.Printf("[DEBUG] RabbitMQ: Tags update response: %#v", resp)
-		if err != nil {
-			return err
-		}
-
-		if resp.StatusCode >= 400 {
-			return fmt.Errorf("Error updating RabbitMQ user: %s", resp.Status)
-		}
-
+	if resp.StatusCode >= 400 {
+		return fmt.Errorf("Error updating RabbitMQ user: %s", resp.Status)
 	}
 
 	return ReadUser(d, meta)
