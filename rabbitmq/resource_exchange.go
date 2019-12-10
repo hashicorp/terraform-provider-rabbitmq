@@ -7,7 +7,7 @@ import (
 
 	"github.com/michaelklishin/rabbit-hole"
 
-	"github.com/hashicorp/terraform/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 )
 
 func resourceExchange() *schema.Resource {
