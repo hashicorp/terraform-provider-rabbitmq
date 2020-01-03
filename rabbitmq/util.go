@@ -4,12 +4,16 @@ import (
 	"strings"
 
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/michaelklishin/rabbit-hole"
 )
 
 func checkDeleted(d *schema.ResourceData, err error) error {
-	if err.Error() == "not found" {
-		d.SetId("")
-		return nil
+	switch e := err.(type) {
+	case rabbithole.ErrorResponse:
+		if e.StatusCode == 404 {
+			d.SetId("")
+			return nil
+		}
 	}
 
 	return err
