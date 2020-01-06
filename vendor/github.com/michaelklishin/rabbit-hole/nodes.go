@@ -1,10 +1,5 @@
 package rabbithole
 
-import (
-	"net/url"
-)
-
-// TODO: this probably should be fixed in RabbitMQ management plugin
 type OsPid string
 
 type NameDescriptionEnabled struct {
@@ -33,6 +28,8 @@ type NodeInfo struct {
 
 	FdUsed        int  `json:"fd_used"`
 	FdTotal       int  `json:"fd_total"`
+	ProcUsed      int  `json:"proc_used"`
+	ProcTotal     int  `json:"proc_total"`
 	SocketsUsed   int  `json:"sockets_used"`
 	SocketsTotal  int  `json:"sockets_total"`
 	MemUsed       int  `json:"mem_used"`
@@ -51,6 +48,8 @@ type NodeInfo struct {
 	AuthMechanisms []AuthMechanism `json:"auth_mechanisms"`
 	ErlangApps     []ErlangApp     `json:"applications"`
 	Contexts       []BrokerContext `json:"contexts"`
+
+	Partitions []string `json:"partitions"`
 }
 
 //
@@ -288,7 +287,7 @@ func (c *Client) ListNodes() (rec []NodeInfo, err error) {
 // }
 
 func (c *Client) GetNode(name string) (rec *NodeInfo, err error) {
-	req, err := newGETRequest(c, "nodes/"+url.QueryEscape(name))
+	req, err := newGETRequest(c, "nodes/"+PathEscape(name))
 	if err != nil {
 		return nil, err
 	}

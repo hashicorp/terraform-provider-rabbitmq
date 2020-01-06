@@ -3,7 +3,7 @@ package rabbitmq
 import (
 	"strings"
 
-	"github.com/hashicorp/terraform/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 )
 
 func checkDeleted(d *schema.ResourceData, err error) error {
