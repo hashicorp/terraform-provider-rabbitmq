@@ -1,4 +1,25 @@
 ## 1.2.0 (Unreleased)
+
+FIXES:
+
+* rabbitmq_user: Fix tags/password update.
+  ([#31](https://github.com/terraform-providers/terraform-provider-rabbitmq/issues/31))
+
+* Correctly handle "not found" errors
+  ([#45](https://github.com/terraform-providers/terraform-provider-rabbitmq/issues/45))
+
+DEV IMPROVEMENTS:
+
+* Upgrade to Go 1.13
+  ([#46](https://github.com/terraform-providers/terraform-provider-rabbitmq/issues/46))
+
+* Terraform SDK migrated to new standalone Terraform plugin SDK.
+  ([#46](https://github.com/terraform-providers/terraform-provider-rabbitmq/issues/46))
+
+* Execute acceptance tests in Travis.
+  ([#47](https://github.com/terraform-providers/terraform-provider-rabbitmq/issues/47))
+
+
 ## 1.1.0 (June 21, 2019)
 
 FIXES:
