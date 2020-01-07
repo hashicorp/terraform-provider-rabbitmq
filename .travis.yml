@@ -6,6 +6,17 @@ language: go
 go:
   - "1.13.x"
 
+env:
+  global:
+  - GOFLAGS=-mod=vendor GO111MODULE=on
+  - RABBITMQ_ENDPOINT="http://127.0.0.1:15672"
+  - RABBITMQ_USERNAME="guest"
+  - RABBITMQ_PASSWORD="guest"
+  jobs:
+  - RABBITMQ_VERSION=3.8
+  - RABBITMQ_VERSION=3.7
+  - RABBITMQ_VERSION=3.6
+
 install:
 # This script is used by the Travis build to install a cookie for
 # go.googlesource.com so rate limits are higher when using `go get` to fetch
@@ -17,13 +28,18 @@ script:
 - make test
 - make vet
 - make website-test
+- docker-compose -f $(pwd)/scripts/docker-compose.yml up -d
+- $(pwd)/scripts/wait-rabbitmq-docker.sh
+- make testacc
+- docker-compose -f $(pwd)/scripts/docker-compose.yml down
+
 
 branches:
   only:
   - master
+  - travis
+
 matrix:
   fast_finish: true
   allow_failures:
   - go: tip
-env:
-  - GOFLAGS=-mod=vendor GO111MODULE=on
