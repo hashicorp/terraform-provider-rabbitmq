@@ -23,8 +23,34 @@ func TestAccVhost(t *testing.T) {
 					"rabbitmq_vhost.test", &vhost,
 				),
 			},
+			{
+				// Test that, once a vhost has been created and stored in the
+				// state, even if it disappears from the RabbitMQ cluster, it
+				// would be created without error.
+				PreConfig: forceDropVhost(&vhost),
+				Config:    testAccVhostConfig_basic,
+				Check: testAccVhostCheck(
+					"rabbitmq_vhost.test", &vhost,
+				),
+			},
 		},
 	})
+}
+
+func forceDropVhost(vhost *string) func() {
+	return func() {
+		rmqc := testAccProvider.Meta().(*rabbithole.Client)
+		resp, err := rmqc.DeleteVhost(*vhost)
+		if err != nil {
+			fmt.Printf("unable to delete vhost: %v", err)
+			return
+		}
+
+		// Should get 204 when the vhost has been deleted
+		if resp.StatusCode != 204 {
+			panic(fmt.Errorf("unable to delete vhost: %v", resp))
+		}
+	}
 }
 
 func testAccVhostCheck(rn string, name *string) resource.TestCheckFunc {
