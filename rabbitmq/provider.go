@@ -7,7 +7,7 @@ import (
 	"io/ioutil"
 	"net/http"
 
-	"github.com/michaelklishin/rabbit-hole"
+	rabbithole "github.com/michaelklishin/rabbit-hole"
 
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/terraform"
@@ -79,6 +79,7 @@ func Provider() terraform.ResourceProvider {
 			"rabbitmq_queue":       resourceQueue(),
 			"rabbitmq_user":        resourceUser(),
 			"rabbitmq_vhost":       resourceVhost(),
+			"rabbitmq_shovel":      resourceShovel(),
 		},
 
 		ConfigureFunc: providerConfigure,
