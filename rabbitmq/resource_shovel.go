@@ -42,15 +42,18 @@ func resourceShovel() *schema.Resource {
 						},
 						"source_exchange": {
 							Type:     schema.TypeString,
-							Required: true,
+							Optional: true,
+							Default:  nil,
 						},
 						"source_exchange_key": {
 							Type:     schema.TypeString,
-							Required: true,
+							Optional: true,
+							Default:  nil,
 						},
 						"source_queue": {
 							Type:     schema.TypeString,
-							Required: true,
+							Optional: true,
+							Default:  nil,
 						},
 						"destination_uri": {
 							Type:     schema.TypeString,
@@ -58,15 +61,18 @@ func resourceShovel() *schema.Resource {
 						},
 						"destination_exchange": {
 							Type:     schema.TypeString,
-							Required: true,
+							Optional: true,
+							Default:  nil,
 						},
 						"destination_exchange_key": {
 							Type:     schema.TypeString,
-							Required: true,
+							Optional: true,
+							Default:  nil,
 						},
 						"destination_queue": {
 							Type:     schema.TypeString,
-							Required: true,
+							Optional: true,
+							Default:  nil,
 						},
 						"prefetch_count": {
 							Type:     schema.TypeInt,
