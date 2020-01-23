@@ -1,6 +1,7 @@
 package rabbitmq
 
 import (
+	"os"
 	"testing"
 
 	rabbithole "github.com/michaelklishin/rabbit-hole"
@@ -13,7 +14,12 @@ func TestAccTopicPermissions_importBasic(t *testing.T) {
 	var topicPermissionInfo rabbithole.TopicPermissionInfo
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
+		PreCheck: func() {
+			if os.Getenv("RABBITMQ_VERSION") == "3.6" {
+				t.Skip("Not supported on 3.6")
+			}
+			testAccPreCheck(t)
+		},
 		Providers:    testAccProviders,
 		CheckDestroy: testAccTopicPermissionsCheckDestroy(&topicPermissionInfo),
 		Steps: []resource.TestStep{
