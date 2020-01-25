@@ -3,7 +3,7 @@ package rabbitmq
 import (
 	"fmt"
 	"log"
-	"strings"
+	"strconv"
 
 	rabbithole "github.com/michaelklishin/rabbit-hole"
 
@@ -60,6 +60,7 @@ func resourceTopicPermissions() *schema.Resource {
 	}
 }
 
+// CreateTopicPermissions for given exchanges
 func CreateTopicPermissions(d *schema.ResourceData, meta interface{}) error {
 	rmqc := meta.(*rabbithole.Client)
 
@@ -85,16 +86,14 @@ func CreateTopicPermissions(d *schema.ResourceData, meta interface{}) error {
 	return ReadTopicPermissions(d, meta)
 }
 
+// ReadTopicPermissions for the given ID
 func ReadTopicPermissions(d *schema.ResourceData, meta interface{}) error {
 	rmqc := meta.(*rabbithole.Client)
 
-	permissionId := strings.Split(d.Id(), "@")
-	if len(permissionId) < 2 {
-		return fmt.Errorf("Unable to determine Permission ID")
+	user, vhost, err := parseID(d)
+	if err != nil {
+		return err
 	}
-
-	user := permissionId[0]
-	vhost := permissionId[1]
 
 	userPerms, err := rmqc.GetTopicPermissionsIn(vhost, user)
 	if err != nil {
@@ -119,16 +118,14 @@ func ReadTopicPermissions(d *schema.ResourceData, meta interface{}) error {
 	return nil
 }
 
+// UpdateTopicPermissions for given ID
 func UpdateTopicPermissions(d *schema.ResourceData, meta interface{}) error {
 	rmqc := meta.(*rabbithole.Client)
 
-	permissionId := strings.Split(d.Id(), "@")
-	if len(permissionId) < 2 {
-		return fmt.Errorf("Unable to determine Permission ID")
+	user, vhost, err := parseID(d)
+	if err != nil {
+		return err
 	}
-
-	user := permissionId[0]
-	vhost := permissionId[1]
 
 	if d.HasChange("permissions") {
 		_, newPerms := d.GetChange("permissions")
@@ -149,16 +146,14 @@ func UpdateTopicPermissions(d *schema.ResourceData, meta interface{}) error {
 	return ReadTopicPermissions(d, meta)
 }
 
+// DeleteTopicPermissions for given ID
 func DeleteTopicPermissions(d *schema.ResourceData, meta interface{}) error {
 	rmqc := meta.(*rabbithole.Client)
 
-	permissionId := strings.Split(d.Id(), "@")
-	if len(permissionId) < 2 {
-		return fmt.Errorf("Unable to determine Permission ID")
+	user, vhost, err := parseID(d)
+	if err != nil {
+		return err
 	}
-
-	user := permissionId[0]
-	vhost := permissionId[1]
 
 	log.Printf("[DEBUG] RabbitMQ: Attempting to delete topic permission for %s", d.Id())
 
@@ -174,6 +169,10 @@ func DeleteTopicPermissions(d *schema.ResourceData, meta interface{}) error {
 	}
 
 	if resp.StatusCode >= 400 {
+		verErr := checkVersion(rmqc)
+		if verErr != nil {
+			return verErr
+		}
 		return fmt.Errorf("Error deleting RabbitMQ topic permission: %s", resp.Status)
 	}
 
@@ -204,8 +203,21 @@ func setTopicPermissionsIn(rmqc *rabbithole.Client, vhost string, user string, p
 	}
 
 	if resp.StatusCode >= 400 {
+		verErr := checkVersion(rmqc)
+		if verErr != nil {
+			return verErr
+		}
 		return fmt.Errorf("Error setting topic permissions: %s", resp.Status)
 	}
 
+	return nil
+}
+
+func checkVersion(rmqc *rabbithole.Client) error {
+	overview, _ := rmqc.Overview()
+	ver, _ := strconv.ParseFloat(overview.RabbitMQVersion, 32)
+	if ver < 3.7 {
+		return fmt.Errorf("Topic permissions were adding in RabbitMQ 3.7, connected to %s", overview.RabbitMQVersion)
+	}
 	return nil
 }

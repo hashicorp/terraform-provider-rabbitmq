@@ -5,7 +5,7 @@ import (
 	"log"
 	"strings"
 
-	"github.com/michaelklishin/rabbit-hole"
+	rabbithole "github.com/michaelklishin/rabbit-hole"
 
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 )
@@ -118,13 +118,10 @@ func ReadPermissions(d *schema.ResourceData, meta interface{}) error {
 func UpdatePermissions(d *schema.ResourceData, meta interface{}) error {
 	rmqc := meta.(*rabbithole.Client)
 
-	permissionId := strings.Split(d.Id(), "@")
-	if len(permissionId) < 2 {
-		return fmt.Errorf("Unable to determine Permission ID")
+	user, vhost, err := parseID(d)
+	if err != nil {
+		return err
 	}
-
-	user := permissionId[0]
-	vhost := permissionId[1]
 
 	if d.HasChange("permissions") {
 		_, newPerms := d.GetChange("permissions")
@@ -146,13 +143,10 @@ func UpdatePermissions(d *schema.ResourceData, meta interface{}) error {
 func DeletePermissions(d *schema.ResourceData, meta interface{}) error {
 	rmqc := meta.(*rabbithole.Client)
 
-	permissionId := strings.Split(d.Id(), "@")
-	if len(permissionId) < 2 {
-		return fmt.Errorf("Unable to determine Permission ID")
+	user, vhost, err := parseID(d)
+	if err != nil {
+		return err
 	}
-
-	user := permissionId[0]
-	vhost := permissionId[1]
 
 	log.Printf("[DEBUG] RabbitMQ: Attempting to delete permission for %s", d.Id())
 
@@ -202,4 +196,12 @@ func setPermissionsIn(rmqc *rabbithole.Client, vhost string, user string, permsM
 	}
 
 	return nil
+}
+
+func parseID(d *schema.ResourceData) (string, string, error) {
+	ID := strings.Split(d.Id(), "@")
+	if len(ID) < 2 {
+		return "", "", fmt.Errorf("Unable to determine Permission ID")
+	}
+	return ID[0], ID[1], nil
 }

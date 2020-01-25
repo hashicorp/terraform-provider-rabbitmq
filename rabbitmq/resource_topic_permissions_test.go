@@ -3,6 +3,7 @@ package rabbitmq
 import (
 	"fmt"
 	"os"
+	"regexp"
 	"strings"
 	"testing"
 
@@ -14,27 +15,30 @@ import (
 
 func TestAccTopicPermissions(t *testing.T) {
 	var topicPermissionInfo rabbithole.TopicPermissionInfo
+	var expectErr *regexp.Regexp
+	checkDestroy := testAccTopicPermissionsCheckDestroy(&topicPermissionInfo)
+	if os.Getenv("RABBITMQ_VERSION") == "3.6" {
+		expectErr, _ = regexp.Compile("^errors during apply: Topic permissions were adding in RabbitMQ 3.7, connected to 3.6.*$")
+		checkDestroy = nil
+	}
 	resource.Test(t, resource.TestCase{
-		PreCheck: func() {
-			if os.Getenv("RABBITMQ_VERSION") == "3.6" {
-				t.Skip("Not supported on 3.6")
-			}
-			testAccPreCheck(t)
-		},
+		PreCheck:     func() { testAccPreCheck(t) },
 		Providers:    testAccProviders,
-		CheckDestroy: testAccTopicPermissionsCheckDestroy(&topicPermissionInfo),
+		CheckDestroy: checkDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: testAccTopicPermissionsConfig_basic,
 				Check: testAccTopicPermissionsCheck(
 					"rabbitmq_topic_permissions.test", &topicPermissionInfo,
 				),
+				ExpectError: expectErr,
 			},
 			{
 				Config: testAccTopicPermissionsConfig_update,
 				Check: testAccTopicPermissionsCheck(
 					"rabbitmq_topic_permissions.test", &topicPermissionInfo,
 				),
+				ExpectError: expectErr,
 			},
 		},
 	})
