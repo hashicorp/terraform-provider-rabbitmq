@@ -6,9 +6,9 @@ description: |-
   Creates and manages a user's topic permissions on a RabbitMQ server.
 ---
 
-# rabbitmq\_permissions
+# rabbitmq\_topic\_permissions
 
-The ``rabbitmq_permissions`` resource creates and manages a user's set of
+The ``rabbitmq_topic_permissions`` resource creates and manages a user's set of
 topic permissions.
 
 ## Example Usage
