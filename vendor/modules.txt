@@ -177,7 +177,7 @@ github.com/jmespath/go-jmespath
 github.com/mattn/go-colorable
 # github.com/mattn/go-isatty v0.0.4
 github.com/mattn/go-isatty
-# github.com/michaelklishin/rabbit-hole v1.5.0
+# github.com/michaelklishin/rabbit-hole v0.0.0-20191008194146-93d9988f0cd5
 github.com/michaelklishin/rabbit-hole
 # github.com/mitchellh/cli v1.0.0
 github.com/mitchellh/cli
