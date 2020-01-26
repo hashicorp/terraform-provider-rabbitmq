@@ -27,14 +27,14 @@ func TestAccTopicPermissions(t *testing.T) {
 		CheckDestroy: checkDestroy,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccTopicPermissionsConfig_basic,
+				Config: testAccTopicPermissionsConfigBasic,
 				Check: testAccTopicPermissionsCheck(
 					"rabbitmq_topic_permissions.test", &topicPermissionInfo,
 				),
 				ExpectError: expectErr,
 			},
 			{
-				Config: testAccTopicPermissionsConfig_update,
+				Config: testAccTopicPermissionsConfigUpdate,
 				Check: testAccTopicPermissionsCheck(
 					"rabbitmq_topic_permissions.test", &topicPermissionInfo,
 				),
@@ -91,7 +91,7 @@ func testAccTopicPermissionsCheckDestroy(topicPermissionInfo *rabbithole.TopicPe
 	}
 }
 
-const testAccTopicPermissionsConfig_basic = `
+const testAccTopicPermissionsConfigBasic = `
 resource "rabbitmq_vhost" "test" {
     name = "test"
 }
@@ -110,9 +110,14 @@ resource "rabbitmq_topic_permissions" "test" {
         write = ".*"
         read = ".*"
     }
+    permissions {
+        exchange = "test_remove"
+        write = ".*"
+        read = ".*"
+    }
 }`
 
-const testAccTopicPermissionsConfig_update = `
+const testAccTopicPermissionsConfigUpdate = `
 resource "rabbitmq_vhost" "test" {
     name = "test"
 }
@@ -130,5 +135,10 @@ resource "rabbitmq_topic_permissions" "test" {
         exchange = ".*"
         write = ".*"
         read = ""
+    }
+    permissions {
+        exchange = "test_add"
+        write = ".*"
+        read = ".*"
     }
 }`

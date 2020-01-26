@@ -35,7 +35,7 @@ func resourceTopicPermissions() *schema.Resource {
 			},
 
 			"permissions": {
-				Type:     schema.TypeList,
+				Type:     schema.TypeSet,
 				Required: true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
@@ -66,9 +66,9 @@ func CreateTopicPermissions(d *schema.ResourceData, meta interface{}) error {
 
 	user := d.Get("user").(string)
 	vhost := d.Get("vhost").(string)
-	permsList := d.Get("permissions").([]interface{})
+	permsSet := d.Get("permissions").(*schema.Set)
 
-	for _, exchange := range permsList {
+	for _, exchange := range permsSet.List() {
 
 		permsMap, ok := exchange.(map[string]interface{})
 		if !ok {
@@ -128,10 +128,13 @@ func UpdateTopicPermissions(d *schema.ResourceData, meta interface{}) error {
 	}
 
 	if d.HasChange("permissions") {
+		err = DeleteTopicPermissions(d, meta)
+		if err != nil {
+			return err
+		}
 		_, newPerms := d.GetChange("permissions")
-
-		newPermsList := newPerms.([]interface{})
-		for _, exchange := range newPermsList {
+		newPermsSet := newPerms.(*schema.Set)
+		for _, exchange := range newPermsSet.List() {
 			permsMap, ok := exchange.(map[string]interface{})
 			if !ok {
 				return fmt.Errorf("Unable to parse permissions")

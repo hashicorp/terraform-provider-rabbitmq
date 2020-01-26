@@ -27,7 +27,7 @@ func TestAccTopicPermissions_importBasic(t *testing.T) {
 		CheckDestroy: checkDestroy,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccTopicPermissionsConfig_basic,
+				Config: testAccTopicPermissionsConfigBasic,
 				Check: testAccTopicPermissionsCheck(
 					resourceName, &topicPermissionInfo,
 				),
