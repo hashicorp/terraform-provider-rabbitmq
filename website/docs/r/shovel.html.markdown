@@ -103,9 +103,9 @@ No further attributes are exported.
 
 ## Import
 
-Shovels can be imported using the `name`
+Shovels can be imported using the `name` and `vhost`
 E.g.
 
 ```
-terraform import rabbitmq_shovel.test test_shovel
+terraform import rabbitmq_shovel.test shovelTest@test
 ```
