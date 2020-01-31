@@ -8,3 +8,6 @@ services:
             RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD:-guest}
         ports:
             - 15672:15672
+        volumes:
+            - ./enabled_plugins:/etc/rabbitmq/enabled_plugins
+        

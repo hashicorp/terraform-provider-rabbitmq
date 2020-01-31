@@ -3,6 +3,7 @@ package rabbitmq
 import (
 	"fmt"
 	"log"
+	"strings"
 
 	rabbithole "github.com/michaelklishin/rabbit-hole"
 
@@ -37,8 +38,9 @@ func resourceShovel() *schema.Resource {
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"source_uri": {
-							Type:     schema.TypeString,
-							Required: true,
+							Type:      schema.TypeString,
+							Required:  true,
+							Sensitive: true,
 						},
 						"source_exchange": {
 							Type:     schema.TypeString,
@@ -56,8 +58,9 @@ func resourceShovel() *schema.Resource {
 							Default:  nil,
 						},
 						"destination_uri": {
-							Type:     schema.TypeString,
-							Required: true,
+							Type:      schema.TypeString,
+							Required:  true,
+							Sensitive: true,
 						},
 						"destination_exchange": {
 							Type:     schema.TypeString,
@@ -127,7 +130,9 @@ func CreateShovel(d *schema.ResourceData, meta interface{}) error {
 		return err
 	}
 
-	d.SetId(shovelName)
+	shovelId := fmt.Sprintf("%s@%s", shovelName, vhost)
+
+	d.SetId(shovelId)
 
 	return ReadShovel(d, meta)
 }
@@ -135,16 +140,20 @@ func CreateShovel(d *schema.ResourceData, meta interface{}) error {
 func ReadShovel(d *schema.ResourceData, meta interface{}) error {
 	rmqc := meta.(*rabbithole.Client)
 
-	vhost := d.Get("vhost").(string)
+	shovelId := strings.Split(d.Id(), "@")
 
-	shovelInfo, err := rmqc.GetShovel(vhost, d.Id())
+	name := shovelId[0]
+	vhost := shovelId[1]
+
+	shovelInfo, err := rmqc.GetShovel(vhost, name)
 	if err != nil {
 		return checkDeleted(d, err)
 	}
 
-	log.Printf("[DEBUG] RabbitMQ: Shovel retrieved: Vhost: %#v, Name: %#v", vhost, d.Id())
+	log.Printf("[DEBUG] RabbitMQ: Shovel retrieved: Vhost: %#v, Name: %#v", vhost, name)
 
 	d.Set("name", shovelInfo.Name)
+	d.Set("vhost", shovelInfo.Vhost)
 
 	return nil
 }
@@ -152,11 +161,14 @@ func ReadShovel(d *schema.ResourceData, meta interface{}) error {
 func DeleteShovel(d *schema.ResourceData, meta interface{}) error {
 	rmqc := meta.(*rabbithole.Client)
 
-	vhost := d.Get("vhost").(string)
+	shovelId := strings.Split(d.Id(), "@")
+
+	name := shovelId[0]
+	vhost := shovelId[1]
 
 	log.Printf("[DEBUG] RabbitMQ: Attempting to delete shovel %s", d.Id())
 
-	resp, err := rmqc.DeleteShovel(vhost, d.Id())
+	resp, err := rmqc.DeleteShovel(vhost, name)
 	log.Printf("[DEBUG] RabbitMQ: shovel deletion response: %#v", resp)
 	if err != nil {
 		return err

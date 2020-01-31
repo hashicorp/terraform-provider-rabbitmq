@@ -72,14 +72,15 @@ func Provider() terraform.ResourceProvider {
 		},
 
 		ResourcesMap: map[string]*schema.Resource{
-			"rabbitmq_binding":     resourceBinding(),
-			"rabbitmq_exchange":    resourceExchange(),
-			"rabbitmq_permissions": resourcePermissions(),
-			"rabbitmq_policy":      resourcePolicy(),
-			"rabbitmq_queue":       resourceQueue(),
-			"rabbitmq_user":        resourceUser(),
-			"rabbitmq_vhost":       resourceVhost(),
-			"rabbitmq_shovel":      resourceShovel(),
+			"rabbitmq_binding":           resourceBinding(),
+			"rabbitmq_exchange":          resourceExchange(),
+			"rabbitmq_permissions":       resourcePermissions(),
+			"rabbitmq_topic_permissions": resourceTopicPermissions(),
+			"rabbitmq_policy":            resourcePolicy(),
+			"rabbitmq_queue":             resourceQueue(),
+			"rabbitmq_user":              resourceUser(),
+			"rabbitmq_vhost":             resourceVhost(),
+			"rabbitmq_shovel":            resourceShovel(),
 		},
 
 		ConfigureFunc: providerConfigure,

@@ -2,6 +2,7 @@ package rabbitmq
 
 import (
 	"fmt"
+	"strings"
 	"testing"
 
 	"github.com/hashicorp/terraform-plugin-sdk/helper/resource"
@@ -10,24 +11,24 @@ import (
 )
 
 func TestAccShovel(t *testing.T) {
-	var shovel string
+	var shovelInfo rabbithole.ShovelInfo
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
 		Providers:    testAccProviders,
-		CheckDestroy: testAccShovelCheckDestroy(shovel),
+		CheckDestroy: testAccShovelCheckDestroy(&shovelInfo),
 		Steps: []resource.TestStep{
 			{
 				Config: testAccShovelConfig_basic,
 				Check: testAccShovelCheck(
-					"rabbitmq_shovel.shovelTest", &shovel,
+					"rabbitmq_shovel.shovelTest", &shovelInfo,
 				),
 			},
 		},
 	})
 }
 
-func testAccShovelCheck(rn string, name *string) resource.TestCheckFunc {
+func testAccShovelCheck(rn string, shovelInfo *rabbithole.ShovelInfo) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
 		rs, ok := s.RootModule().Resources[rn]
 		if !ok {
@@ -39,14 +40,16 @@ func testAccShovelCheck(rn string, name *string) resource.TestCheckFunc {
 		}
 
 		rmqc := testAccProvider.Meta().(*rabbithole.Client)
+		shovelParts := strings.Split(rs.Primary.ID, "@")
+
 		shovelInfos, err := rmqc.ListShovels()
 		if err != nil {
 			return fmt.Errorf("Error retrieving shovels: %s", err)
 		}
 
 		for _, info := range shovelInfos {
-			if info.Name == rs.Primary.ID {
-				*name = rs.Primary.ID
+			if info.Name == shovelParts[0] && info.Vhost == shovelParts[1] {
+				shovelInfo = &info
 				return nil
 			}
 		}
@@ -55,16 +58,17 @@ func testAccShovelCheck(rn string, name *string) resource.TestCheckFunc {
 	}
 }
 
-func testAccShovelCheckDestroy(name string) resource.TestCheckFunc {
+func testAccShovelCheckDestroy(shovelInfo *rabbithole.ShovelInfo) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
 		rmqc := testAccProvider.Meta().(*rabbithole.Client)
+
 		shovelInfos, err := rmqc.ListShovels()
 		if err != nil {
 			return fmt.Errorf("Error retrieving shovels: %s", err)
 		}
 
 		for _, info := range shovelInfos {
-			if info.Name == name {
+			if info.Name == shovelInfo.Name && info.Vhost == shovelInfo.Vhost {
 				return fmt.Errorf("shovel still exists: %v", info)
 			}
 		}
