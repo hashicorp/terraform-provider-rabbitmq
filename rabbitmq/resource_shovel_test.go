@@ -82,6 +82,22 @@ resource "rabbitmq_vhost" "test" {
     name = "test"
 }
 
+resource "rabbitmq_user" "test" {
+    name = "mctest"
+    password = "foobar"
+    tags = ["administrator", "management"]
+}
+
+resource "rabbitmq_permissions" "test" {
+    user = "${rabbitmq_user.test.name}"
+    vhost = "${rabbitmq_vhost.test.name}"
+    permissions {
+        configure = ".*"
+        write = ".*"
+        read = ".*"
+    }
+}
+
 resource "rabbitmq_exchange" "test" {
     name = "test_exchange"
     vhost = "${rabbitmq_vhost.test.name}"
