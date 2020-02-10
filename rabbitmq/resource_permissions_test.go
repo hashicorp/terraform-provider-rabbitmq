@@ -34,6 +34,43 @@ func TestAccPermissions(t *testing.T) {
 	})
 }
 
+func TestAccPermissions_Empty(t *testing.T) {
+
+	configCreate := `
+resource "rabbitmq_vhost" "test" {
+    name = "test"
+}
+
+resource "rabbitmq_user" "test" {
+    name = "mctest"
+    password = "foobar"
+}
+
+resource "rabbitmq_permissions" "test" {
+    user = rabbitmq_user.test.name
+    vhost = rabbitmq_vhost.test.name
+    permissions {
+        configure = ""
+        write = ""
+        read = ""
+    }
+}`
+	var permissionInfo rabbithole.PermissionInfo
+	resource.Test(t, resource.TestCase{
+		PreCheck:     func() { testAccPreCheck(t) },
+		Providers:    testAccProviders,
+		CheckDestroy: testAccPermissionsCheckDestroy(&permissionInfo),
+		Steps: []resource.TestStep{
+			{
+				Config: configCreate,
+				Check: testAccPermissionsCheck(
+					"rabbitmq_permissions.test", &permissionInfo,
+				),
+			},
+		},
+	})
+}
+
 func testAccPermissionsCheck(rn string, permissionInfo *rabbithole.PermissionInfo) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
 		rs, ok := s.RootModule().Resources[rn]
