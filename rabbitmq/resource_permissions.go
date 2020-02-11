@@ -68,9 +68,9 @@ func CreatePermissions(d *schema.ResourceData, meta interface{}) error {
 	vhost := d.Get("vhost").(string)
 	permsList := d.Get("permissions").([]interface{})
 
-	permsMap, ok := permsList[0].(map[string]interface{})
-	if !ok {
-		return fmt.Errorf("Unable to parse permissions")
+	permsMap := map[string]interface{}{}
+	if permsList[0] != nil {
+		permsMap = permsList[0].(map[string]interface{})
 	}
 
 	if err := setPermissionsIn(rmqc, vhost, user, permsMap); err != nil {
