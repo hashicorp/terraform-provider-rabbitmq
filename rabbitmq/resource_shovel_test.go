@@ -82,14 +82,8 @@ resource "rabbitmq_vhost" "test" {
     name = "test"
 }
 
-resource "rabbitmq_user" "test" {
-    name = "mctest"
-    password = "foobar"
-    tags = ["administrator", "management"]
-}
-
-resource "rabbitmq_permissions" "test" {
-    user = "${rabbitmq_user.test.name}"
+resource "rabbitmq_permissions" "guest" {
+    user = "guest"
     vhost = "${rabbitmq_vhost.test.name}"
     permissions {
         configure = ".*"
@@ -100,7 +94,7 @@ resource "rabbitmq_permissions" "test" {
 
 resource "rabbitmq_exchange" "test" {
     name = "test_exchange"
-    vhost = "${rabbitmq_vhost.test.name}"
+    vhost = "${rabbitmq_permissions.guest.vhost}"
     settings {
         type = "fanout"
         durable = false
@@ -110,7 +104,7 @@ resource "rabbitmq_exchange" "test" {
 
 resource "rabbitmq_queue" "test" {
 	name = "test_queue"
-	vhost = "${rabbitmq_vhost.test.name}"
+	vhost = "${rabbitmq_exchange.test.vhost}"
 	settings {
 		durable = false
 		auto_delete = true
@@ -119,7 +113,7 @@ resource "rabbitmq_queue" "test" {
 
 resource "rabbitmq_shovel" "shovelTest" {
 	name = "shovelTest"
-	vhost = "${rabbitmq_vhost.test.name}"
+	vhost = "${rabbitmq_queue.test.vhost}"
 	info {
 		source_uri = "amqp:///test"
 		source_exchange = "${rabbitmq_exchange.test.name}"
