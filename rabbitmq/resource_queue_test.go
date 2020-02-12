@@ -25,6 +25,12 @@ func TestAccQueue_basic(t *testing.T) {
 					"rabbitmq_queue.test", &queueInfo,
 				),
 			},
+			{
+				Config: testAccQueueConfig_update,
+				Check: testAccQueueCheck(
+					"rabbitmq_queue.test", &queueInfo,
+				),
+			},
 		},
 	})
 }
@@ -144,6 +150,30 @@ resource "rabbitmq_queue" "test" {
     settings {
         durable = false
         auto_delete = true
+    }
+}`
+
+const testAccQueueConfig_update = `
+resource "rabbitmq_vhost" "test" {
+    name = "test"
+}
+
+resource "rabbitmq_permissions" "guest" {
+    user = "guest"
+    vhost = "${rabbitmq_vhost.test.name}"
+    permissions {
+        configure = ".*"
+        write = ".*"
+        read = ".*"
+    }
+}
+
+resource "rabbitmq_queue" "test" {
+    name = "test"
+    vhost = "${rabbitmq_permissions.guest.vhost}"
+    settings {
+        durable = true
+        auto_delete = false
     }
 }`
 
