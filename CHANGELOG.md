@@ -1,4 +1,29 @@
 ## 1.3.0 (Unreleased)
+
+FEATURES:
+
+* New resource: ``rabbitmq_topic_permissions``. This allows to manage permissions on topic exchanges.
+  This is compatible with RabbitMQ 3.7 and newer.
+  ([#49](https://github.com/terraform-providers/terraform-provider-rabbitmq/pull/49))
+
+FIXES:
+
+* ``rabbitmq_queue``: Set ForceNew on all attributes. Queues cannot be changed after creation.
+  ([#38](https://github.com/terraform-providers/terraform-provider-rabbitmq/pull/38))
+  ([#53](https://github.com/terraform-providers/terraform-provider-rabbitmq/pull/53))
+
+* ``rabbitmq_permissions``: Fix error when setting empty permissions.
+  ([#52](https://github.com/terraform-providers/terraform-provider-rabbitmq/pull/52))
+
+IMPROVEMENTS:
+
+* Allow to use the provider behind a proxy.
+  It reads HTTPS_PROXY / HTTP_PROXY environment variables to configure the HTTP client (cf [net/http documentation](https://godoc.org/net/http#ProxyFromEnvironment))
+  ([#39](https://github.com/terraform-providers/terraform-provider-rabbitmq/pull/39))
+
+* Document the configuration of the provider with environment variables.
+  ([#50](https://github.com/terraform-providers/terraform-provider-rabbitmq/pull/50))
+
 ## 1.2.0 (January 08, 2020)
 
 FIXES:
