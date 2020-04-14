@@ -69,6 +69,17 @@ func Provider() terraform.ResourceProvider {
 				Optional:    true,
 				DefaultFunc: schema.EnvDefaultFunc("RABBITMQ_CACERT", ""),
 			},
+
+			"clientcert_file": {
+				Type:        schema.TypeString,
+				Optional:    true,
+				DefaultFunc: schema.EnvDefaultFunc("RABBITMQ_CLIENTCERT", ""),
+			},
+			"clientkey_file": {
+				Type:        schema.TypeString,
+				Optional:    true,
+				DefaultFunc: schema.EnvDefaultFunc("RABBITMQ_CLIENTKEY", ""),
+			},
 		},
 
 		ResourcesMap: map[string]*schema.Resource{
@@ -93,6 +104,8 @@ func providerConfigure(d *schema.ResourceData) (interface{}, error) {
 	var endpoint = d.Get("endpoint").(string)
 	var insecure = d.Get("insecure").(bool)
 	var cacertFile = d.Get("cacert_file").(string)
+	var clientcertFile = d.Get("clientcert_file").(string)
+	var clientkeyFile = d.Get("clientkey_file").(string)
 
 	// Configure TLS/SSL:
 	// Ignore self-signed cert warnings
@@ -108,6 +121,13 @@ func providerConfigure(d *schema.ResourceData) (interface{}, error) {
 		caCertPool := x509.NewCertPool()
 		caCertPool.AppendCertsFromPEM(caCert)
 		tlsConfig.RootCAs = caCertPool
+	}
+	if clientcertFile != "" && clientkeyFile != "" {
+		clientPair, err := tls.LoadX509KeyPair(clientcertFile, clientkeyFile)
+		if err != nil {
+			return nil, err
+		}
+		tlsConfig.Certificates = []tls.Certificate{clientPair}
 	}
 	if insecure {
 		tlsConfig.InsecureSkipVerify = true
