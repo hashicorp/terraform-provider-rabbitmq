@@ -18,15 +18,33 @@ func TestAccFederationUpstream(t *testing.T) {
 		CheckDestroy: testAccFederationUpstreamCheckDestroy(&upstream),
 		Steps: []resource.TestStep{
 			{
-				Config: testAccFederationUpstreamCreate,
+				Config: testAccFederationUpstream_create,
 				Check: testAccFederationUpstreamCheck(
 					"rabbitmq_federation_upstream.foo", &upstream,
 				),
 			},
 			{
-				Config: testAccFederationUpstreamUpdate,
+				Config: testAccFederationUpstream_update,
 				Check: testAccFederationUpstreamCheck(
 					"rabbitmq_federation_upstream.foo", &upstream,
+				),
+			},
+		},
+	})
+}
+
+func TestAccFederationUpstream_hasComponent(t *testing.T) {
+	var upstream rabbithole.FederationUpstream
+	resource.Test(t, resource.TestCase{
+		PreCheck:     func() { testAccPreCheck(t) },
+		Providers:    testAccProviders,
+		CheckDestroy: testAccFederationUpstreamCheckDestroy(&upstream),
+		Steps: []resource.TestStep{
+			{
+				Config: testAccFederationUpstream_has_component,
+				Check: resource.ComposeTestCheckFunc(
+					testAccFederationUpstreamCheck("rabbitmq_federation_upstream.foo", &upstream),
+					resource.TestCheckResourceAttr("rabbitmq_federation_upstream.foo", "component", "federation-upstream"),
 				),
 			},
 		},
@@ -84,7 +102,7 @@ func testAccFederationUpstreamCheckDestroy(upstream *rabbithole.FederationUpstre
 	}
 }
 
-const testAccFederationUpstreamCreate = `
+const testAccFederationUpstream_create = `
 resource "rabbitmq_vhost" "test" {
 		name = "test"
 }
@@ -120,7 +138,7 @@ resource "rabbitmq_federation_upstream" "foo" {
 }
 `
 
-const testAccFederationUpstreamUpdate = `
+const testAccFederationUpstream_update = `
 resource "rabbitmq_vhost" "test" {
 		name = "test"
 }
@@ -152,6 +170,31 @@ resource "rabbitmq_federation_upstream" "foo" {
 				message_ttl = 60000
 
 				queue = ""
+		}
+}
+`
+
+const testAccFederationUpstream_has_component = `
+resource "rabbitmq_vhost" "test" {
+		name = "test"
+}
+
+resource "rabbitmq_permissions" "guest" {
+		user = "guest"
+		vhost = rabbitmq_vhost.test.name
+		permissions {
+				configure = ".*"
+				write = ".*"
+				read = ".*"
+		}
+}
+
+resource "rabbitmq_federation_upstream" "foo" {
+		name = "foo"
+		vhost = rabbitmq_permissions.guest.vhost
+
+		definition {
+				uri = "amqp://server-name"
 		}
 }
 `

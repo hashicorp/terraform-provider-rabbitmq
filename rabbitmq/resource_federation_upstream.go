@@ -29,6 +29,12 @@ func resourceFederationUpstream() *schema.Resource {
 				ForceNew: true,
 			},
 
+			// "federation-upstream"
+			"component": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
+
 			"definition": {
 				Type:     schema.TypeList,
 				Required: true,
@@ -135,6 +141,7 @@ func ReadFederationUpstream(d *schema.ResourceData, meta interface{}) error {
 
 	d.Set("name", upstream.Name)
 	d.Set("vhost", upstream.Vhost)
+	d.Set("component", upstream.Component)
 
 	defMap := map[string]interface{}{
 		"uri":             upstream.Definition.Uri,
