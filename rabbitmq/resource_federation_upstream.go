@@ -15,6 +15,9 @@ func resourceFederationUpstream() *schema.Resource {
 		Read:   ReadFederationUpstream,
 		Update: UpdateFederationUpstream,
 		Delete: DeleteFederationUpstream,
+		Importer: &schema.ResourceImporter{
+			State: schema.ImportStatePassthrough,
+		},
 
 		Schema: map[string]*schema.Schema{
 			"name": {
