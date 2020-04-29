@@ -124,13 +124,10 @@ func CreateFederationUpstream(d *schema.ResourceData, meta interface{}) error {
 func ReadFederationUpstream(d *schema.ResourceData, meta interface{}) error {
 	rmqc := meta.(*rabbithole.Client)
 
-	id := strings.Split(d.Id(), "@")
-	if len(id) < 2 {
-		return fmt.Errorf("Unable to determine federation upstream id: %s", d.Id())
+	name, vhost, err := parseFederationUpstreamId(d.Id())
+	if err != nil {
+		return err
 	}
-
-	name := id[0]
-	vhost := id[1]
 
 	upstream, err := rmqc.GetFederationUpstream(vhost, name)
 	if err != nil {
@@ -165,13 +162,10 @@ func ReadFederationUpstream(d *schema.ResourceData, meta interface{}) error {
 func UpdateFederationUpstream(d *schema.ResourceData, meta interface{}) error {
 	rmqc := meta.(*rabbithole.Client)
 
-	id := strings.Split(d.Id(), "@")
-	if len(id) < 2 {
-		return fmt.Errorf("Unable to determine federation upstream id: %s", d.Id())
+	name, vhost, err := parseFederationUpstreamId(d.Id())
+	if err != nil {
+		return err
 	}
-
-	name := id[0]
-	vhost := id[1]
 
 	if d.HasChange("definition") {
 		_, newDef := d.GetChange("definition")
@@ -193,13 +187,10 @@ func UpdateFederationUpstream(d *schema.ResourceData, meta interface{}) error {
 func DeleteFederationUpstream(d *schema.ResourceData, meta interface{}) error {
 	rmqc := meta.(*rabbithole.Client)
 
-	id := strings.Split(d.Id(), "@")
-	if len(id) < 2 {
-		return fmt.Errorf("Unable to determine federation upstream id: %s", d.Id())
+	name, vhost, err := parseFederationUpstreamId(d.Id())
+	if err != nil {
+		return err
 	}
-
-	name := id[0]
-	vhost := id[1]
 
 	log.Printf("[DEBUG] RabbitMQ: Attempting to delete federation upstream for %s", d.Id())
 
@@ -279,4 +270,15 @@ func putFederationUpstream(rmqc *rabbithole.Client, vhost string, name string, d
 	}
 
 	return nil
+}
+
+func parseFederationUpstreamId(resourceId string) (name, vhost string, err error) {
+	parts := strings.Split(resourceId, "@")
+	if len(parts) != 2 {
+		err = fmt.Errorf("Unable to determine federation upstream id: %s", resourceId)
+		return
+	}
+	name = parts[0]
+	vhost = parts[1]
+	return
 }

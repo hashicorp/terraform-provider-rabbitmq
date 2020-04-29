@@ -51,6 +51,34 @@ func TestAccFederationUpstream_hasComponent(t *testing.T) {
 	})
 }
 
+func TestAccFederationUpstream_parseFederationUpstreamId(t *testing.T) {
+	err := func(s string) error {
+		return fmt.Errorf("Unable to determine federation upstream id: %s", s)
+	}
+
+	var empty string
+
+	var tests = []struct {
+		input string
+		name  string
+		vhost string
+		err   error
+	}{
+		{empty, empty, empty, err(empty)},
+		{"foo/test", empty, empty, err("foo/test")},
+		{"footest", empty, empty, err("footest")},
+		{"foo@bar@test", empty, empty, err("foo@bar@test")},
+		{"foo@test", "foo", "test", nil},
+	}
+
+	for _, test := range tests {
+		name, vhost, err := parseFederationUpstreamId(test.input)
+		if name != test.name && vhost != test.vhost && err != test.err {
+			t.Errorf("parseFederationUpstreamId failed for %#v", test)
+		}
+	}
+}
+
 func testAccFederationUpstreamCheck(rn string, upstream *rabbithole.FederationUpstream) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
 		rs, ok := s.RootModule().Resources[rn]
