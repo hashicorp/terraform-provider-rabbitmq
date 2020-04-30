@@ -127,7 +127,7 @@ func CreateFederationUpstream(d *schema.ResourceData, meta interface{}) error {
 func ReadFederationUpstream(d *schema.ResourceData, meta interface{}) error {
 	rmqc := meta.(*rabbithole.Client)
 
-	name, vhost, err := parseFederationUpstreamId(d.Id())
+	name, vhost, err := parseResourceId(d)
 	if err != nil {
 		return err
 	}
@@ -165,7 +165,7 @@ func ReadFederationUpstream(d *schema.ResourceData, meta interface{}) error {
 func UpdateFederationUpstream(d *schema.ResourceData, meta interface{}) error {
 	rmqc := meta.(*rabbithole.Client)
 
-	name, vhost, err := parseFederationUpstreamId(d.Id())
+	name, vhost, err := parseResourceId(d)
 	if err != nil {
 		return err
 	}
@@ -190,7 +190,7 @@ func UpdateFederationUpstream(d *schema.ResourceData, meta interface{}) error {
 func DeleteFederationUpstream(d *schema.ResourceData, meta interface{}) error {
 	rmqc := meta.(*rabbithole.Client)
 
-	name, vhost, err := parseFederationUpstreamId(d.Id())
+	name, vhost, err := parseResourceId(d)
 	if err != nil {
 		return err
 	}
@@ -275,10 +275,15 @@ func putFederationUpstream(rmqc *rabbithole.Client, vhost string, name string, d
 	return nil
 }
 
-func parseFederationUpstreamId(resourceId string) (name, vhost string, err error) {
+// TODO: move to util.go
+func parseResourceId(d *schema.ResourceData) (name, vhost string, err error) {
+	return parseId(d.Id())
+}
+
+func parseId(resourceId string) (name, vhost string, err error) {
 	parts := strings.Split(resourceId, "@")
 	if len(parts) != 2 {
-		err = fmt.Errorf("Unable to determine federation upstream id: %s", resourceId)
+		err = fmt.Errorf("Unable to parse resource id: %s", resourceId)
 		return
 	}
 	name = parts[0]

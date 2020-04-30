@@ -51,30 +51,34 @@ func TestAccFederationUpstream_hasComponent(t *testing.T) {
 	})
 }
 
-func TestAccFederationUpstream_parseFederationUpstreamId(t *testing.T) {
-	err := func(s string) error {
-		return fmt.Errorf("Unable to determine federation upstream id: %s", s)
+func TestParseId(t *testing.T) {
+	var badInputs = []string{
+		"",
+		"foo/test",
+		"footest",
+		"foo@bar@test",
 	}
 
-	var empty string
+	for _, input := range badInputs {
+		_, _, err := parseId(input)
+		if err == nil {
+			t.Errorf("parseId failed for: %s.", input)
+		}
+	}
 
-	var tests = []struct {
+	var goodInputs = []struct {
 		input string
 		name  string
 		vhost string
-		err   error
 	}{
-		{empty, empty, empty, err(empty)},
-		{"foo/test", empty, empty, err("foo/test")},
-		{"footest", empty, empty, err("footest")},
-		{"foo@bar@test", empty, empty, err("foo@bar@test")},
-		{"foo@test", "foo", "test", nil},
+		{"foo@test", "foo", "test"},
+		{"foo@/", "foo", "/"},
 	}
 
-	for _, test := range tests {
-		name, vhost, err := parseFederationUpstreamId(test.input)
-		if name != test.name && vhost != test.vhost && err != test.err {
-			t.Errorf("parseFederationUpstreamId failed for %#v", test)
+	for _, test := range goodInputs {
+		name, vhost, err := parseId(test.input)
+		if err != nil || name != test.name || vhost != test.vhost {
+			t.Errorf("parseId failed for: %s.", test.input)
 		}
 	}
 }
