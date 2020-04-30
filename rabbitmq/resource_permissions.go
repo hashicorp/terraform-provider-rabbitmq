@@ -5,7 +5,7 @@ import (
 	"log"
 	"strings"
 
-	rabbithole "github.com/michaelklishin/rabbit-hole"
+	rabbithole "github.com/michaelklishin/rabbit-hole/v2"
 
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 )

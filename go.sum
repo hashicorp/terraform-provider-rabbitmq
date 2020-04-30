@@ -135,6 +135,9 @@ github.com/mattn/go-isatty v0.0.4/go.mod h1:M+lRXTBqGeGNdLjl/ufCoiOlB5xdOkqRJdNx
 github.com/mattn/go-runewidth v0.0.4/go.mod h1:LwmH8dsx7+W8Uxz3IHJYH5QSwggIsqBzpuz5H//U1FU=
 github.com/michaelklishin/rabbit-hole v0.0.0-20191008194146-93d9988f0cd5 h1:uA3b4GgZMZxAJsTkd+CVQ85b7KBlD7HLpd/FfTNlGN0=
 github.com/michaelklishin/rabbit-hole v0.0.0-20191008194146-93d9988f0cd5/go.mod h1:+pmbihVqjC3GPdfWv1V2TnRSuVvwrWLKfEP/MZVB/Wc=
+github.com/michaelklishin/rabbit-hole v1.5.0 h1:Bex27BiFDsijCM9D0ezSHqyy0kehpYHuNKaPqq/a4RM=
+github.com/michaelklishin/rabbit-hole/v2 v2.1.0 h1:3ZKJqtXunAKhtQfDmJiA6MFYqUtAetBhAX45XPT1sf4=
+github.com/michaelklishin/rabbit-hole/v2 v2.1.0/go.mod h1:2CxUwsJizwcl9DwEdKCkyDI3NQE65y63FWXrbanDaOc=
 github.com/mitchellh/cli v1.0.0 h1:iGBIsUe3+HZ/AD/Vd7DErOt5sU9fa8Uj7A2s1aggv1Y=
 github.com/mitchellh/cli v1.0.0/go.mod h1:hNIlj7HEI86fIcpObd7a0FcrxTWetlwJDGcceTlRvqc=
 github.com/mitchellh/colorstring v0.0.0-20190213212951-d06e56a500db h1:62I3jR2EmQ4l5rM/4FEfDWcRD+abF5XlKShorW5LRoQ=
