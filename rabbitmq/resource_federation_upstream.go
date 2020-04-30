@@ -3,7 +3,6 @@ package rabbitmq
 import (
 	"fmt"
 	"log"
-	"strings"
 
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 	rabbithole "github.com/michaelklishin/rabbit-hole/v2"
@@ -273,20 +272,4 @@ func putFederationUpstream(rmqc *rabbithole.Client, vhost string, name string, d
 	}
 
 	return nil
-}
-
-// TODO: move to util.go
-func parseResourceId(d *schema.ResourceData) (name, vhost string, err error) {
-	return parseId(d.Id())
-}
-
-func parseId(resourceId string) (name, vhost string, err error) {
-	parts := strings.Split(resourceId, "@")
-	if len(parts) != 2 {
-		err = fmt.Errorf("Unable to parse resource id: %s", resourceId)
-		return
-	}
-	name = parts[0]
-	vhost = parts[1]
-	return
 }
