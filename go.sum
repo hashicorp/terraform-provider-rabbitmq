@@ -242,6 +242,10 @@ github.com/mitchellh/reflectwalk v1.0.0 h1:9D+8oIskB4VJBN5SFlmc27fSlIBZaov1Wpk/I
 github.com/mitchellh/reflectwalk v1.0.0/go.mod h1:mSTlrgnPZtwu0c4WaC2kGObEpuNDbx0jmZXqmk4esnw=
 github.com/mitchellh/reflectwalk v1.0.1 h1:FVzMWA5RllMAKIdUSC8mdWo3XtwoecrH79BY70sEEpE=
 github.com/mitchellh/reflectwalk v1.0.1/go.mod h1:mSTlrgnPZtwu0c4WaC2kGObEpuNDbx0jmZXqmk4esnw=
+github.com/niclic/rabbit-hole/v2 v2.1.0 h1:vpzaTBuwO9MtPN8C+2krmwh4eVg15Rlrmct3DCgWSfs=
+github.com/niclic/rabbit-hole/v2 v2.1.0/go.mod h1:2CxUwsJizwcl9DwEdKCkyDI3NQE65y63FWXrbanDaOc=
+github.com/niclic/rabbit-hole/v2 v2.1.1-0.20200426194252-fccfa4cf97f4 h1:0JO7WxDrvTgHcrkRqLxF9Y5pdOzAsJvk4QEO1dWwEdY=
+github.com/niclic/rabbit-hole/v2 v2.1.1-0.20200426194252-fccfa4cf97f4/go.mod h1:2CxUwsJizwcl9DwEdKCkyDI3NQE65y63FWXrbanDaOc=
 github.com/oklog/run v1.0.0 h1:Ru7dDtJNOyC66gQ5dQmaCa0qIsAUFY3sFpK1Xk8igrw=
 github.com/oklog/run v1.0.0/go.mod h1:dlhp/R75TPv97u0XWUtDeV/lRKWPKSdTuV0TZvrmrQA=
 github.com/onsi/ginkgo v1.6.0/go.mod h1:lLunBs/Ym6LB5Z9jYTR76FiuTmxDTDusOGeTQH+WWjE=
