@@ -177,8 +177,8 @@ github.com/jmespath/go-jmespath
 github.com/mattn/go-colorable
 # github.com/mattn/go-isatty v0.0.4
 github.com/mattn/go-isatty
-# github.com/michaelklishin/rabbit-hole v0.0.0-20191008194146-93d9988f0cd5
-github.com/michaelklishin/rabbit-hole
+# github.com/michaelklishin/rabbit-hole/v2 v2.1.0
+github.com/michaelklishin/rabbit-hole/v2
 # github.com/mitchellh/cli v1.0.0
 github.com/mitchellh/cli
 # github.com/mitchellh/colorstring v0.0.0-20190213212951-d06e56a500db
@@ -266,7 +266,7 @@ golang.org/x/oauth2/google
 golang.org/x/oauth2/internal
 golang.org/x/oauth2/jws
 golang.org/x/oauth2/jwt
-# golang.org/x/sys v0.0.0-20190624142023-c5567b49c5d0
+# golang.org/x/sys v0.0.0-20190712062909-fae7ac547cb7
 golang.org/x/sys/unix
 # golang.org/x/text v0.3.2
 golang.org/x/text/secure/bidirule

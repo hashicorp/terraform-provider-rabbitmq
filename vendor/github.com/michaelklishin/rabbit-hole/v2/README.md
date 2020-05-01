@@ -9,8 +9,8 @@ Rabbit Hole supports the last 2 stable Go versions, as well as the version in de
 
 ## Supported RabbitMQ Versions
 
- * RabbitMQ `3.7.x` is the primary target series
- * Most API functions would work against RabbitMQ `3.6.x` nodes or earlier but those releases are officially out of support
+ * RabbitMQ `3.8.x` is the primary target series
+ * Almost all API endpoints work against RabbitMQ `3.7.x` nodes but some metrics and stats may be missing
 
 All versions require [RabbitMQ Management UI plugin](https://www.rabbitmq.com/management.html) to be installed and enabled.
 
@@ -22,7 +22,7 @@ designed after a couple of other RabbitMQ HTTP API clients with stable
 APIs. Breaking API changes are not out of the question but not without
 a reasonable version bump.
 
-It is largely (80-90%) feature complete and decently documented.
+It is largely feature complete and decently documented.
 
 
 ## Change Log
@@ -34,7 +34,10 @@ the [change log](https://github.com/michaelklishin/rabbit-hole/blob/master/Chang
 ## Installation
 
 ```
-go get github.com/michaelklishin/rabbit-hole
+go get github.com/michaelklishin/rabbit-hole/v2
+
+# or, for v1.x:
+# go get github.com/michaelklishin/rabbit-hole
 ```
 
 
@@ -52,7 +55,7 @@ To import the package:
 
 ``` go
 import (
-       "github.com/michaelklishin/rabbit-hole"
+       "github.com/michaelklishin/rabbit-hole/v2"
 )
 ```
 
@@ -372,4 +375,4 @@ See [CONTRIBUTING.md](https://github.com/michaelklishin/rabbit-hole/blob/master/
 
 2-clause BSD license.
 
-(c) Michael S. Klishin, 2013-2019.
+(c) Michael S. Klishin and contributors, 2013-2020.
