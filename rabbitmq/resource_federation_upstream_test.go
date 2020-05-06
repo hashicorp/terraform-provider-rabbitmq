@@ -20,16 +20,31 @@ func TestAccFederationUpstream(t *testing.T) {
 		Steps: []resource.TestStep{
 			{
 				Config: testAccFederationUpstream_create,
-				Check: testAccFederationUpstreamCheck(
-					"rabbitmq_federation_upstream.foo", &upstream,
-				),
-			},
+				Check: resource.ComposeTestCheckFunc(
+					testAccFederationUpstreamCheck("rabbitmq_federation_upstream.foo", &upstream),
+					resource.TestCheckResourceAttr("rabbitmq_federation_upstream.foo", "definition.#", "1"),
+					resource.TestCheckResourceAttr("rabbitmq_federation_upstream.foo", "definition.0.uri", "amqp://server-name"),
+					resource.TestCheckResourceAttr("rabbitmq_federation_upstream.foo", "definition.0.prefetch_count", "1000"),
+					resource.TestCheckResourceAttr("rabbitmq_federation_upstream.foo", "definition.0.reconnect_delay", "1"),
+					resource.TestCheckResourceAttr("rabbitmq_federation_upstream.foo", "definition.0.ack_mode", "on-confirm"),
+					resource.TestCheckResourceAttr("rabbitmq_federation_upstream.foo", "definition.0.trust_user_id", "false"),
+					resource.TestCheckResourceAttr("rabbitmq_federation_upstream.foo", "definition.0.max_hops", "1"),
+					resource.TestCheckResourceAttr("rabbitmq_federation_upstream.foo", "definition.0.expires", "0"),
+					resource.TestCheckResourceAttr("rabbitmq_federation_upstream.foo", "definition.0.message_ttl", "0"),
+				)},
 			{
 				Config: testAccFederationUpstream_update,
-				Check: testAccFederationUpstreamCheck(
-					"rabbitmq_federation_upstream.foo", &upstream,
-				),
-			},
+				Check: resource.ComposeTestCheckFunc(
+					testAccFederationUpstreamCheck("rabbitmq_federation_upstream.foo", &upstream),
+					resource.TestCheckResourceAttr("rabbitmq_federation_upstream.foo", "definition.#", "1"),
+					resource.TestCheckResourceAttr("rabbitmq_federation_upstream.foo", "definition.0.prefetch_count", "500"),
+					resource.TestCheckResourceAttr("rabbitmq_federation_upstream.foo", "definition.0.reconnect_delay", "10"),
+					resource.TestCheckResourceAttr("rabbitmq_federation_upstream.foo", "definition.0.ack_mode", "on-publish"),
+					resource.TestCheckResourceAttr("rabbitmq_federation_upstream.foo", "definition.0.trust_user_id", "true"),
+					resource.TestCheckResourceAttr("rabbitmq_federation_upstream.foo", "definition.0.max_hops", "2"),
+					resource.TestCheckResourceAttr("rabbitmq_federation_upstream.foo", "definition.0.expires", "1800000"),
+					resource.TestCheckResourceAttr("rabbitmq_federation_upstream.foo", "definition.0.message_ttl", "60000"),
+				)},
 		},
 	})
 }
