@@ -2,6 +2,7 @@ package rabbitmq
 
 import (
 	"fmt"
+	"regexp"
 	"strings"
 	"testing"
 
@@ -41,11 +42,49 @@ func TestAccFederationUpstream_hasComponent(t *testing.T) {
 		CheckDestroy: testAccFederationUpstreamCheckDestroy(&upstream),
 		Steps: []resource.TestStep{
 			{
-				Config: testAccFederationUpstream_has_component,
+				Config: testAccFederationUpstream_basic,
 				Check: resource.ComposeTestCheckFunc(
 					testAccFederationUpstreamCheck("rabbitmq_federation_upstream.foo", &upstream),
 					resource.TestCheckResourceAttr("rabbitmq_federation_upstream.foo", "component", "federation-upstream"),
 				),
+			},
+		},
+	})
+}
+
+func TestAccFederationUpstream_defaults(t *testing.T) {
+	var upstream rabbithole.FederationUpstream
+	resource.Test(t, resource.TestCase{
+		PreCheck:     func() { testAccPreCheck(t) },
+		Providers:    testAccProviders,
+		CheckDestroy: testAccFederationUpstreamCheckDestroy(&upstream),
+		Steps: []resource.TestStep{
+			{
+				Config: testAccFederationUpstream_basic,
+				Check: resource.ComposeTestCheckFunc(
+					testAccFederationUpstreamCheck("rabbitmq_federation_upstream.foo", &upstream),
+					resource.TestCheckResourceAttr("rabbitmq_federation_upstream.foo", "definition.#", "1"),
+					resource.TestCheckResourceAttr("rabbitmq_federation_upstream.foo", "definition.0.prefetch_count", "1000"),
+					resource.TestCheckResourceAttr("rabbitmq_federation_upstream.foo", "definition.0.reconnect_delay", "5"),
+					resource.TestCheckResourceAttr("rabbitmq_federation_upstream.foo", "definition.0.ack_mode", "on-confirm"),
+					resource.TestCheckResourceAttr("rabbitmq_federation_upstream.foo", "definition.0.trust_user_id", "false"),
+					resource.TestCheckResourceAttr("rabbitmq_federation_upstream.foo", "definition.0.max_hops", "1"),
+				),
+			},
+		},
+	})
+}
+
+func TestAccFederationUpstream_validation(t *testing.T) {
+	var upstream rabbithole.FederationUpstream
+	resource.Test(t, resource.TestCase{
+		PreCheck:     func() { testAccPreCheck(t) },
+		Providers:    testAccProviders,
+		CheckDestroy: testAccFederationUpstreamCheckDestroy(&upstream),
+		Steps: []resource.TestStep{
+			{
+				Config:      testAccFederationUpstream_validation,
+				ExpectError: regexp.MustCompile("^config is invalid"),
 			},
 		},
 	})
@@ -174,7 +213,7 @@ resource "rabbitmq_federation_upstream" "foo" {
 }
 `
 
-const testAccFederationUpstream_has_component = `
+const testAccFederationUpstream_basic = `
 resource "rabbitmq_vhost" "test" {
 		name = "test"
 }
@@ -195,6 +234,32 @@ resource "rabbitmq_federation_upstream" "foo" {
 
 		definition {
 				uri = "amqp://server-name"
+		}
+}
+`
+
+const testAccFederationUpstream_validation = `
+resource "rabbitmq_vhost" "test" {
+		name = "test"
+}
+
+resource "rabbitmq_permissions" "guest" {
+		user = "guest"
+		vhost = rabbitmq_vhost.test.name
+		permissions {
+				configure = ".*"
+				write = ".*"
+				read = ".*"
+		}
+}
+
+resource "rabbitmq_federation_upstream" "foo" {
+		name = "foo"
+		vhost = rabbitmq_permissions.guest.vhost
+
+		definition {
+				uri = "amqp://server-name"
+				ack_mode = "not-valid"
 		}
 }
 `

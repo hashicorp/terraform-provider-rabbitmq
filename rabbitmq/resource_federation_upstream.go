@@ -5,6 +5,7 @@ import (
 	"log"
 
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
 	rabbithole "github.com/michaelklishin/rabbit-hole/v2"
 )
 
@@ -53,21 +54,30 @@ func resourceFederationUpstream() *schema.Resource {
 						"prefetch_count": {
 							Type:     schema.TypeInt,
 							Optional: true,
+							Default:  1000,
 						},
 
 						"reconnect_delay": {
 							Type:     schema.TypeInt,
 							Optional: true,
+							Default:  5,
 						},
 
 						"ack_mode": {
 							Type:     schema.TypeString,
 							Optional: true,
+							Default:  "on-confirm",
+							ValidateFunc: validation.StringInSlice([]string{
+								"on-confirm",
+								"on-publish",
+								"no-ack",
+							}, false),
 						},
 
 						"trust_user_id": {
 							Type:     schema.TypeBool,
 							Optional: true,
+							Default:  false,
 						},
 						// applicable to federated exchanges only
 						"exchange": {
@@ -78,6 +88,7 @@ func resourceFederationUpstream() *schema.Resource {
 						"max_hops": {
 							Type:     schema.TypeInt,
 							Optional: true,
+							Default:  1,
 						},
 
 						"expires": {
