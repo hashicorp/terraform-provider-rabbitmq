@@ -1,6 +1,37 @@
-## Changes Between 2.1.0 and 2.2.0 (in development)
+## Changes Between 2.2.0 and 2.3.0 (in development)
 
-No changes yet.
+### New Endpoints for Listing Federation Links
+
+Contributed by @niclic.
+
+GitHub issue: [#155](https://github.com/michaelklishin/rabbit-hole/pull/155)
+
+### Conditional Exclusion of Expiration Field
+
+Contributed by @niclic.
+
+GitHub issue: [#154](https://github.com/michaelklishin/rabbit-hole/pull/154)
+
+
+## Changes Between 2.1.0 and 2.2.0 (May 21st, 2020)
+
+### [Runtime Parameter](https://www.rabbitmq.com/parameters.html) and [Federation Upstream](https://www.rabbitmq.com/federation.html) Management
+
+Contributed by @niclic.
+
+GitHub issue: [#150](https://github.com/michaelklishin/rabbit-hole/pull/150)
+
+### Improved Error Reporting
+
+Contributed by @niclic.
+
+GitHub issue: [michaelklishin/rabbit-hole#152](https://github.com/michaelklishin/rabbit-hole/pull/152)
+
+### Fixed a null Pointer in HTTP Response Handling
+
+Contributed by @justabaka.
+
+GitHub issue: [#148](https://github.com/michaelklishin/rabbit-hole/pull/148)
 
 
 ## Changes Between 2.0.0 and 2.1.0 (Feb 1st, 2020)
