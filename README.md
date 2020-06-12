@@ -31,11 +31,15 @@ $ make build
 ```
 
 Using the provider
-----------------------
-## Fill in for each provider
+------------------
+
+The provider supports verions `3.8.x` and `3.7.x` of RabbitMQ. It may still work with version`3.6.x`, however this version is no longer supported.
+
+For information on RabbitMQ versions, see the RabbitMQ [version documentation](https://www.rabbitmq.com/versions.html) and [changelog](https://www.rabbitmq.com/changelog.html).
+
 
 Developing the Provider
----------------------------
+-----------------------
 
 If you wish to work on the provider, you'll first need [Go](http://www.golang.org) installed on your machine (version 1.11+ is *required*). You'll also need to correctly setup a [GOPATH](http://golang.org/doc/code.html#GOPATH), as well as adding `$GOPATH/bin` to your `$PATH`.
 
