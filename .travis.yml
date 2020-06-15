@@ -15,7 +15,6 @@ env:
   jobs:
   - RABBITMQ_VERSION=3.8
   - RABBITMQ_VERSION=3.7
-  - RABBITMQ_VERSION=3.6
 
 install:
 # This script is used by the Travis build to install a cookie for
