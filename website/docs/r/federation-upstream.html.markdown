@@ -27,17 +27,44 @@ resource "rabbitmq_permissions" "guest" {
   }
 }
 
+// downstream exchange
+resource "rabbitmq_exchange" "foo" {
+  name  = "foo"
+  vhost = rabbitmq_permissions.guest.vhost
+
+  settings {
+    type    = "topic"
+    durable = "true"
+  }
+}
+
+// upstream broker
 resource "rabbitmq_federation_upstream" "foo" {
   name = "foo"
   vhost = rabbitmq_permissions.guest.vhost
 
   definition {
-    uri = "amqp://server-name"
+    uri = "amqp://guest:guest@upstream-server-name:5672/%2f"
     prefetch_count = 1000
     reconnect_delay = 5
     ack_mode = "on-confirm"
     trust_user_id = false
     max_hops = 1
+  }
+}
+
+resource "rabbitmq_policy" "foo" {
+  name  = "foo"
+  vhost = rabbitmq_permissions.guest.vhost
+
+  policy {
+    pattern  = "(^${rabbitmq_exchange.foo.name}$)"
+    priority = 1
+    apply_to = "exchanges"
+
+    definition = {
+      federation-upstream = rabbitmq_federation_upstream.foo.name
+    }
   }
 }
 
