@@ -13,37 +13,39 @@ import (
 
 func TestAccFederationUpstream(t *testing.T) {
 	var upstream rabbithole.FederationUpstream
+	resourceName := "rabbitmq_federation_upstream.foo"
+
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
 		Providers:    testAccProviders,
 		CheckDestroy: testAccFederationUpstreamCheckDestroy(&upstream),
 		Steps: []resource.TestStep{
 			{
-				Config: testAccFederationUpstream_create,
+				Config: testAccFederationUpstream_create(),
 				Check: resource.ComposeTestCheckFunc(
-					testAccFederationUpstreamCheck("rabbitmq_federation_upstream.foo", &upstream),
-					resource.TestCheckResourceAttr("rabbitmq_federation_upstream.foo", "definition.#", "1"),
-					resource.TestCheckResourceAttr("rabbitmq_federation_upstream.foo", "definition.0.uri", "amqp://server-name"),
-					resource.TestCheckResourceAttr("rabbitmq_federation_upstream.foo", "definition.0.prefetch_count", "1000"),
-					resource.TestCheckResourceAttr("rabbitmq_federation_upstream.foo", "definition.0.reconnect_delay", "1"),
-					resource.TestCheckResourceAttr("rabbitmq_federation_upstream.foo", "definition.0.ack_mode", "on-confirm"),
-					resource.TestCheckResourceAttr("rabbitmq_federation_upstream.foo", "definition.0.trust_user_id", "false"),
-					resource.TestCheckResourceAttr("rabbitmq_federation_upstream.foo", "definition.0.max_hops", "1"),
-					resource.TestCheckResourceAttr("rabbitmq_federation_upstream.foo", "definition.0.expires", "0"),
-					resource.TestCheckResourceAttr("rabbitmq_federation_upstream.foo", "definition.0.message_ttl", "0"),
+					testAccFederationUpstreamCheck(resourceName, &upstream),
+					resource.TestCheckResourceAttr(resourceName, "definition.#", "1"),
+					resource.TestCheckResourceAttr(resourceName, "definition.0.uri", "amqp://server-name"),
+					resource.TestCheckResourceAttr(resourceName, "definition.0.prefetch_count", "1000"),
+					resource.TestCheckResourceAttr(resourceName, "definition.0.reconnect_delay", "1"),
+					resource.TestCheckResourceAttr(resourceName, "definition.0.ack_mode", "on-confirm"),
+					resource.TestCheckResourceAttr(resourceName, "definition.0.trust_user_id", "false"),
+					resource.TestCheckResourceAttr(resourceName, "definition.0.max_hops", "1"),
+					resource.TestCheckResourceAttr(resourceName, "definition.0.expires", "0"),
+					resource.TestCheckResourceAttr(resourceName, "definition.0.message_ttl", "0"),
 				)},
 			{
-				Config: testAccFederationUpstream_update,
+				Config: testAccFederationUpstream_update(),
 				Check: resource.ComposeTestCheckFunc(
-					testAccFederationUpstreamCheck("rabbitmq_federation_upstream.foo", &upstream),
-					resource.TestCheckResourceAttr("rabbitmq_federation_upstream.foo", "definition.#", "1"),
-					resource.TestCheckResourceAttr("rabbitmq_federation_upstream.foo", "definition.0.prefetch_count", "500"),
-					resource.TestCheckResourceAttr("rabbitmq_federation_upstream.foo", "definition.0.reconnect_delay", "10"),
-					resource.TestCheckResourceAttr("rabbitmq_federation_upstream.foo", "definition.0.ack_mode", "on-publish"),
-					resource.TestCheckResourceAttr("rabbitmq_federation_upstream.foo", "definition.0.trust_user_id", "true"),
-					resource.TestCheckResourceAttr("rabbitmq_federation_upstream.foo", "definition.0.max_hops", "2"),
-					resource.TestCheckResourceAttr("rabbitmq_federation_upstream.foo", "definition.0.expires", "1800000"),
-					resource.TestCheckResourceAttr("rabbitmq_federation_upstream.foo", "definition.0.message_ttl", "60000"),
+					testAccFederationUpstreamCheck(resourceName, &upstream),
+					resource.TestCheckResourceAttr(resourceName, "definition.#", "1"),
+					resource.TestCheckResourceAttr(resourceName, "definition.0.prefetch_count", "500"),
+					resource.TestCheckResourceAttr(resourceName, "definition.0.reconnect_delay", "10"),
+					resource.TestCheckResourceAttr(resourceName, "definition.0.ack_mode", "on-publish"),
+					resource.TestCheckResourceAttr(resourceName, "definition.0.trust_user_id", "true"),
+					resource.TestCheckResourceAttr(resourceName, "definition.0.max_hops", "2"),
+					resource.TestCheckResourceAttr(resourceName, "definition.0.expires", "1800000"),
+					resource.TestCheckResourceAttr(resourceName, "definition.0.message_ttl", "60000"),
 				)},
 		},
 	})
@@ -51,16 +53,18 @@ func TestAccFederationUpstream(t *testing.T) {
 
 func TestAccFederationUpstream_hasComponent(t *testing.T) {
 	var upstream rabbithole.FederationUpstream
+	resourceName := "rabbitmq_federation_upstream.foo"
+
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
 		Providers:    testAccProviders,
 		CheckDestroy: testAccFederationUpstreamCheckDestroy(&upstream),
 		Steps: []resource.TestStep{
 			{
-				Config: testAccFederationUpstream_basic,
+				Config: testAccFederationUpstream_basic(),
 				Check: resource.ComposeTestCheckFunc(
-					testAccFederationUpstreamCheck("rabbitmq_federation_upstream.foo", &upstream),
-					resource.TestCheckResourceAttr("rabbitmq_federation_upstream.foo", "component", "federation-upstream"),
+					testAccFederationUpstreamCheck(resourceName, &upstream),
+					resource.TestCheckResourceAttr(resourceName, "component", "federation-upstream"),
 				),
 			},
 		},
@@ -69,21 +73,23 @@ func TestAccFederationUpstream_hasComponent(t *testing.T) {
 
 func TestAccFederationUpstream_defaults(t *testing.T) {
 	var upstream rabbithole.FederationUpstream
+	resourceName := "rabbitmq_federation_upstream.foo"
+
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
 		Providers:    testAccProviders,
 		CheckDestroy: testAccFederationUpstreamCheckDestroy(&upstream),
 		Steps: []resource.TestStep{
 			{
-				Config: testAccFederationUpstream_basic,
+				Config: testAccFederationUpstream_basic(),
 				Check: resource.ComposeTestCheckFunc(
-					testAccFederationUpstreamCheck("rabbitmq_federation_upstream.foo", &upstream),
-					resource.TestCheckResourceAttr("rabbitmq_federation_upstream.foo", "definition.#", "1"),
-					resource.TestCheckResourceAttr("rabbitmq_federation_upstream.foo", "definition.0.prefetch_count", "1000"),
-					resource.TestCheckResourceAttr("rabbitmq_federation_upstream.foo", "definition.0.reconnect_delay", "5"),
-					resource.TestCheckResourceAttr("rabbitmq_federation_upstream.foo", "definition.0.ack_mode", "on-confirm"),
-					resource.TestCheckResourceAttr("rabbitmq_federation_upstream.foo", "definition.0.trust_user_id", "false"),
-					resource.TestCheckResourceAttr("rabbitmq_federation_upstream.foo", "definition.0.max_hops", "1"),
+					testAccFederationUpstreamCheck(resourceName, &upstream),
+					resource.TestCheckResourceAttr(resourceName, "definition.#", "1"),
+					resource.TestCheckResourceAttr(resourceName, "definition.0.prefetch_count", "1000"),
+					resource.TestCheckResourceAttr(resourceName, "definition.0.reconnect_delay", "5"),
+					resource.TestCheckResourceAttr(resourceName, "definition.0.ack_mode", "on-confirm"),
+					resource.TestCheckResourceAttr(resourceName, "definition.0.trust_user_id", "false"),
+					resource.TestCheckResourceAttr(resourceName, "definition.0.max_hops", "1"),
 				),
 			},
 		},
@@ -92,13 +98,14 @@ func TestAccFederationUpstream_defaults(t *testing.T) {
 
 func TestAccFederationUpstream_validation(t *testing.T) {
 	var upstream rabbithole.FederationUpstream
+
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
 		Providers:    testAccProviders,
 		CheckDestroy: testAccFederationUpstreamCheckDestroy(&upstream),
 		Steps: []resource.TestStep{
 			{
-				Config:      testAccFederationUpstream_validation,
+				Config:      testAccFederationUpstream_validation(),
 				ExpectError: regexp.MustCompile("^config is invalid"),
 			},
 		},
@@ -156,7 +163,8 @@ func testAccFederationUpstreamCheckDestroy(upstream *rabbithole.FederationUpstre
 	}
 }
 
-const testAccFederationUpstream_create = `
+func testAccFederationUpstream_baseConfig() string {
+	return fmt.Sprintf(`
 resource "rabbitmq_vhost" "test" {
 		name = "test"
 }
@@ -171,6 +179,11 @@ resource "rabbitmq_permissions" "guest" {
 		}
 }
 
+`)
+}
+
+func testAccFederationUpstream_create() string {
+	return testAccFederationUpstream_baseConfig() + fmt.Sprintf(`
 resource "rabbitmq_federation_upstream" "foo" {
 		name = "foo"
 		vhost = rabbitmq_permissions.guest.vhost
@@ -190,23 +203,11 @@ resource "rabbitmq_federation_upstream" "foo" {
 				queue = ""
 		}
 }
-`
-
-const testAccFederationUpstream_update = `
-resource "rabbitmq_vhost" "test" {
-		name = "test"
+`)
 }
 
-resource "rabbitmq_permissions" "guest" {
-		user = "guest"
-		vhost = rabbitmq_vhost.test.name
-		permissions {
-				configure = ".*"
-				write = ".*"
-				read = ".*"
-		}
-}
-
+func testAccFederationUpstream_update() string {
+	return testAccFederationUpstream_baseConfig() + fmt.Sprintf(`
 resource "rabbitmq_federation_upstream" "foo" {
 		name = "foo"
 		vhost = rabbitmq_permissions.guest.vhost
@@ -226,23 +227,11 @@ resource "rabbitmq_federation_upstream" "foo" {
 				queue = ""
 		}
 }
-`
-
-const testAccFederationUpstream_basic = `
-resource "rabbitmq_vhost" "test" {
-		name = "test"
+`)
 }
 
-resource "rabbitmq_permissions" "guest" {
-		user = "guest"
-		vhost = rabbitmq_vhost.test.name
-		permissions {
-				configure = ".*"
-				write = ".*"
-				read = ".*"
-		}
-}
-
+func testAccFederationUpstream_basic() string {
+	return testAccFederationUpstream_baseConfig() + fmt.Sprintf(`
 resource "rabbitmq_federation_upstream" "foo" {
 		name = "foo"
 		vhost = rabbitmq_permissions.guest.vhost
@@ -251,23 +240,11 @@ resource "rabbitmq_federation_upstream" "foo" {
 				uri = "amqp://server-name"
 		}
 }
-`
-
-const testAccFederationUpstream_validation = `
-resource "rabbitmq_vhost" "test" {
-		name = "test"
+`)
 }
 
-resource "rabbitmq_permissions" "guest" {
-		user = "guest"
-		vhost = rabbitmq_vhost.test.name
-		permissions {
-				configure = ".*"
-				write = ".*"
-				read = ".*"
-		}
-}
-
+func testAccFederationUpstream_validation() string {
+	return testAccFederationUpstream_baseConfig() + fmt.Sprintf(`
 resource "rabbitmq_federation_upstream" "foo" {
 		name = "foo"
 		vhost = rabbitmq_permissions.guest.vhost
@@ -277,4 +254,5 @@ resource "rabbitmq_federation_upstream" "foo" {
 				ack_mode = "not-valid"
 		}
 }
-`
+`)
+}

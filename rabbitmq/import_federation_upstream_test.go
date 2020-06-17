@@ -9,8 +9,8 @@ import (
 )
 
 func TestAccFederationUpstream_importBasic(t *testing.T) {
-	resourceName := "rabbitmq_federation_upstream.foo"
 	var upstream rabbithole.FederationUpstream
+	resourceName := "rabbitmq_federation_upstream.foo"
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
@@ -18,7 +18,7 @@ func TestAccFederationUpstream_importBasic(t *testing.T) {
 		CheckDestroy: testAccFederationUpstreamCheckDestroy(&upstream),
 		Steps: []resource.TestStep{
 			{
-				Config: testAccFederationUpstream_create,
+				Config: testAccFederationUpstream_create(),
 				Check: testAccFederationUpstreamCheck(
 					resourceName, &upstream,
 				),
