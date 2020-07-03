@@ -1,6 +1,7 @@
 package rabbitmq
 
 import (
+	"fmt"
 	"strings"
 
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
@@ -32,4 +33,21 @@ func percentEncodeSlashes(s string) string {
 func percentDecodeSlashes(s string) string {
 	// Decode any forward slashes, then decode any percent signs.
 	return strings.Replace(strings.Replace(s, "%2F", "/", -1), "%25", "%", -1)
+}
+
+// get the id of the resource from the ResourceData
+func parseResourceId(d *schema.ResourceData) (name, vhost string, err error) {
+	return parseId(d.Id())
+}
+
+// get the resource name and rabbitmq vhost from the resource id
+func parseId(resourceId string) (name, vhost string, err error) {
+	parts := strings.Split(resourceId, "@")
+	if len(parts) != 2 {
+		err = fmt.Errorf("Unable to parse resource id: %s", resourceId)
+		return
+	}
+	name = parts[0]
+	vhost = parts[1]
+	return
 }
