@@ -37,30 +37,40 @@ func resourceShovel() *schema.Resource {
 				MaxItems: 1,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
-						"source_uri": {
-							Type:      schema.TypeString,
-							Required:  true,
-							Sensitive: true,
+						"ack_mode": {
+							Type:     schema.TypeString,
+							Optional: true,
+							Default:  "on-confirm",
 						},
-						"source_exchange": {
+						"add_forward_headers": {
+							Type:     schema.TypeBool,
+							Optional: true,
+							Default:  nil,
+						},
+						"delete_after": {
 							Type:     schema.TypeString,
 							Optional: true,
 							Default:  nil,
 						},
-						"source_exchange_key": {
+						"destination_add_forward_headers": {
+							Type:     schema.TypeBool,
+							Optional: true,
+							Default:  nil,
+						},
+						"destination_add_timestamp_header": {
+							Type:     schema.TypeBool,
+							Optional: true,
+							Default:  false,
+						},
+						"destination_address": {
 							Type:     schema.TypeString,
 							Optional: true,
 							Default:  nil,
 						},
-						"source_queue": {
+						"destination_application_properties": {
 							Type:     schema.TypeString,
 							Optional: true,
 							Default:  nil,
-						},
-						"destination_uri": {
-							Type:      schema.TypeString,
-							Required:  true,
-							Sensitive: true,
 						},
 						"destination_exchange": {
 							Type:     schema.TypeString,
@@ -72,35 +82,80 @@ func resourceShovel() *schema.Resource {
 							Optional: true,
 							Default:  nil,
 						},
+						"destination_properties": {
+							Type:     schema.TypeString,
+							Optional: true,
+							Default:  nil,
+						},
+						"destination_protocol": {
+							Type:     schema.TypeString,
+							Optional: true,
+							Default:  "amqp091",
+						},
+						"destination_publish_properties": {
+							Type:     schema.TypeString,
+							Optional: true,
+							Default:  nil,
+						},
 						"destination_queue": {
 							Type:     schema.TypeString,
 							Optional: true,
 							Default:  nil,
 						},
+						"destination_uri": {
+							Type:      schema.TypeString,
+							Required:  true,
+							Sensitive: true,
+						},
 						"prefetch_count": {
 							Type:     schema.TypeInt,
 							Optional: true,
-							Default:  1000,
+							Default:  nil,
 						},
 						"reconnect_delay": {
 							Type:     schema.TypeInt,
 							Optional: true,
 							Default:  1,
 						},
-						"add_forward_headers": {
-							Type:     schema.TypeBool,
-							Optional: true,
-							Default:  false,
-						},
-						"ack_mode": {
+						"source_address": {
 							Type:     schema.TypeString,
 							Optional: true,
-							Default:  "on-confirm",
+							Default:  nil,
 						},
-						"delete_after": {
+						"source_delete_after": {
 							Type:     schema.TypeString,
 							Optional: true,
-							Default:  "never",
+							Default:  nil,
+						},
+						"source_exchange": {
+							Type:     schema.TypeString,
+							Optional: true,
+							Default:  nil,
+						},
+						"source_exchange_key": {
+							Type:     schema.TypeString,
+							Optional: true,
+							Default:  nil,
+						},
+						"source_prefetch_count": {
+							Type:     schema.TypeInt,
+							Optional: true,
+							Default:  nil,
+						},
+						"source_protocol": {
+							Type:     schema.TypeString,
+							Optional: true,
+							Default:  "amqp091",
+						},
+						"source_queue": {
+							Type:     schema.TypeString,
+							Optional: true,
+							Default:  nil,
+						},
+						"source_uri": {
+							Type:      schema.TypeString,
+							Required:  true,
+							Sensitive: true,
 						},
 					},
 				},
@@ -184,24 +239,32 @@ func DeleteShovel(d *schema.ResourceData, meta interface{}) error {
 func setShovelDefinition(shovelMap map[string]interface{}) interface{} {
 	shovelDefinition := &rabbithole.ShovelDefinition{}
 
-	if v, ok := shovelMap["source_uri"].(string); ok {
-		shovelDefinition.SourceURI = v
+	if v, ok := shovelMap["ack_mode"].(string); ok {
+		shovelDefinition.AckMode = v
 	}
 
-	if v, ok := shovelMap["source_exchange"].(string); ok {
-		shovelDefinition.SourceExchange = v
+	if v, ok := shovelMap["add_forward_headers"].(bool); ok {
+		shovelDefinition.AddForwardHeaders = v
 	}
 
-	if v, ok := shovelMap["source_exchange_key"].(string); ok {
-		shovelDefinition.SourceExchangeKey = v
+	if v, ok := shovelMap["delete_after"].(string); ok {
+		shovelDefinition.DeleteAfter = v
 	}
 
-	if v, ok := shovelMap["source_queue"].(string); ok {
-		shovelDefinition.SourceQueue = v
+	if v, ok := shovelMap["destination_add_forward_headers"].(bool); ok {
+		shovelDefinition.DestinationAddForwardHeaders = v
 	}
 
-	if v, ok := shovelMap["destination_uri"].(string); ok {
-		shovelDefinition.DestinationURI = v
+	if v, ok := shovelMap["destination_add_timestamp_header"].(bool); ok {
+		shovelDefinition.DestinationAddTimestampHeader = v
+	}
+
+	if v, ok := shovelMap["destination_address"].(string); ok {
+		shovelDefinition.DestinationAddress = v
+	}
+
+	if v, ok := shovelMap["destination_application_properties"].(string); ok {
+		shovelDefinition.DestinationApplicationProperties = v
 	}
 
 	if v, ok := shovelMap["destination_exchange"].(string); ok {
@@ -212,8 +275,24 @@ func setShovelDefinition(shovelMap map[string]interface{}) interface{} {
 		shovelDefinition.DestinationExchangeKey = v
 	}
 
+	if v, ok := shovelMap["destination_properties"].(string); ok {
+		shovelDefinition.DestinationProperties = v
+	}
+
+	if v, ok := shovelMap["destination_protocol"].(string); ok {
+		shovelDefinition.DestinationProtocol = v
+	}
+
+	if v, ok := shovelMap["destination_publish_properties"].(string); ok {
+		shovelDefinition.DestinationPublishProperties = v
+	}
+
 	if v, ok := shovelMap["destination_queue"].(string); ok {
 		shovelDefinition.DestinationQueue = v
+	}
+
+	if v, ok := shovelMap["destination_uri"].(string); ok {
+		shovelDefinition.DestinationURI = v
 	}
 
 	if v, ok := shovelMap["prefetch_count"].(int); ok {
@@ -223,17 +302,35 @@ func setShovelDefinition(shovelMap map[string]interface{}) interface{} {
 	if v, ok := shovelMap["reconnect_delay"].(int); ok {
 		shovelDefinition.ReconnectDelay = v
 	}
-
-	if v, ok := shovelMap["add_forward_headers"].(bool); ok {
-		shovelDefinition.AddForwardHeaders = v
+	if v, ok := shovelMap["source_address"].(string); ok {
+		shovelDefinition.SourceAddress = v
 	}
 
-	if v, ok := shovelMap["ack_mode"].(string); ok {
-		shovelDefinition.AckMode = v
+	if v, ok := shovelMap["source_delete_after"].(string); ok {
+		shovelDefinition.SourceDeleteAfter = v
 	}
 
-	if v, ok := shovelMap["delete_after"].(string); ok {
-		shovelDefinition.DeleteAfter = v
+	if v, ok := shovelMap["source_exchange"].(string); ok {
+		shovelDefinition.SourceExchange = v
+	}
+
+	if v, ok := shovelMap["source_exchange_key"].(string); ok {
+		shovelDefinition.SourceExchangeKey = v
+	}
+	if v, ok := shovelMap["source_prefetch_count"].(int); ok {
+		shovelDefinition.SourcePrefetchCount = v
+	}
+
+	if v, ok := shovelMap["source_protocol"].(string); ok {
+		shovelDefinition.SourceProtocol = v
+	}
+
+	if v, ok := shovelMap["source_queue"].(string); ok {
+		shovelDefinition.SourceQueue = v
+	}
+
+	if v, ok := shovelMap["source_uri"].(string); ok {
+		shovelDefinition.SourceURI = v
 	}
 
 	return *shovelDefinition
