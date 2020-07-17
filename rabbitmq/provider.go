@@ -92,6 +92,7 @@ func Provider() terraform.ResourceProvider {
 			"rabbitmq_queue":               resourceQueue(),
 			"rabbitmq_user":                resourceUser(),
 			"rabbitmq_vhost":               resourceVhost(),
+			"rabbitmq_shovel":              resourceShovel(),
 		},
 
 		ConfigureFunc: providerConfigure,
