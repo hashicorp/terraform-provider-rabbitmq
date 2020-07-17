@@ -152,7 +152,16 @@ func ReadBinding(d *schema.ResourceData, meta interface{}) error {
 			d.Set("destination_type", binding.DestinationType)
 			d.Set("routing_key", binding.RoutingKey)
 			d.Set("properties_key", binding.PropertiesKey)
-			d.Set("arguments", binding.Arguments)
+
+			if v, ok := d.Get("arguments_json").(string); ok && v != "" {
+				bytes, err := json.Marshal(binding.Arguments)
+				if err != nil {
+					return fmt.Errorf("could not encode arguments as JSON: %w", err)
+				}
+				d.Set("arguments_json", string(bytes))
+			} else {
+				d.Set("arguments", binding.Arguments)
+			}
 		}
 	}
 
