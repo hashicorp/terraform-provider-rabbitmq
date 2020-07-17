@@ -1,4 +1,29 @@
 ## 1.4.0 (Unreleased)
+
+FEATURES:
+
+* `rabbitmq_federation_upstream`: New resource to manage federation upstreams.
+  ([#55](https://github.com/terraform-providers/terraform-provider-rabbitmq/pull/55))
+
+* `rabbitmq_shovel`: New resource to manage shovels.
+  ([#48](https://github.com/terraform-providers/terraform-provider-rabbitmq/pull/48))
+
+* `provider`: Adding client certificate authentication
+  ([#29](https://github.com/terraform-providers/terraform-provider-rabbitmq/pull/29))
+
+* `rabbitmq_binding`: Allow to specify arguments directly as JSON with `arguments_json`.
+  ([#59](https://github.com/terraform-providers/terraform-provider-rabbitmq/pull/59))
+
+DEV IMPROVEMENTS:
+
+* Upgrade rabbithole to v2.2.
+  ([#54](https://github.com/terraform-providers/terraform-provider-rabbitmq/pull/54)) and ([#57](https://github.com/terraform-providers/terraform-provider-rabbitmq/pull/57))
+
+* Remove official support of RabbitMQ 3.6.
+  ([#58](https://github.com/terraform-providers/terraform-provider-rabbitmq/pull/58))
+
+* Upgrade to Go 1.14
+
 ## 1.3.0 (February 23, 2020)
 
 FEATURES:
