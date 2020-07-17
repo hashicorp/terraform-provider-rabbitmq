@@ -138,6 +138,7 @@ github.com/hashicorp/logutils
 # github.com/hashicorp/terraform-config-inspect v0.0.0-20190821133035-82a99dc22ef4
 github.com/hashicorp/terraform-config-inspect/tfconfig
 # github.com/hashicorp/terraform-plugin-sdk v1.0.0
+## explicit
 github.com/hashicorp/terraform-plugin-sdk/helper/hashcode
 github.com/hashicorp/terraform-plugin-sdk/helper/logging
 github.com/hashicorp/terraform-plugin-sdk/helper/resource
@@ -195,6 +196,7 @@ github.com/mattn/go-colorable
 # github.com/mattn/go-isatty v0.0.4
 github.com/mattn/go-isatty
 # github.com/michaelklishin/rabbit-hole/v2 v2.2.1-0.20200601180354-b5a90e068691
+## explicit
 github.com/michaelklishin/rabbit-hole/v2
 # github.com/mitchellh/cli v1.0.0
 github.com/mitchellh/cli
