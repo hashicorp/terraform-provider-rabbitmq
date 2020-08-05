@@ -8,7 +8,7 @@ description: |-
 
 # rabbitmq\_shovel
 
-The ``rabbitmq_shovel`` resource creates and manages a shovel.
+The ``rabbitmq_shovel`` resource creates and manages a dynamic shovel.
 
 ## Example Usage
 
@@ -57,45 +57,72 @@ The following arguments are supported:
 
 * `vhost` - (Required) The vhost to create the resource in.
 
-* `info` - (Required) The settings of the shovel. The structure is
+* `info` - (Required) The settings of the dynamic shovel. The structure is
   described below.
 
 The `info` block supports:
 
+### Essential parameters
+
 * `source_uri` - (Required) The amqp uri for the source.
 
-* `source_exchange` - (Optional) The exchange from which to consume.
-Either this or source_queue must be specified but not both.
-
-* `source_exchange_key` - (Optional) The routing key when using source_exchange.
+* `source_protocol` - (Optional) The protocol (`amqp091` or `amqp10`) to use when connecting to the source.
+Defaults to `amqp091`.
 
 * `source_queue` - (Optional) The queue from which to consume.
-Either this or source_exchange must be specified but not both.
+Either this or `source_exchange` must be specified but not both.
 
 * `destination_uri` - (Required) The amqp uri for the destination .
 
-* `destination_exchange` - (Optional) The exchange to which messages should be published.
-Either this or destination_queue must be specified but not both.
-
-* `destination_exchange_key` - (Optional) The routing key when using destination_exchange.
+* `destination_protocol` - (Optional) The protocol (`amqp091` or `amqp10`) to use when connecting to the destination.
+Defaults to `amqp091`.
 
 * `destination_queue` - (Optional) The queue to which messages should be published.
-Either this or destination_exchange must be specified but not both.
+Either this or `destination_exchange` must be specified but not both.
 
-* `prefetch_count` - (Optional) The maximum number of unacknowledged messages copied over a shovel at any one time.
-Defaults to `1000`.
+### Optional parameters
+
+* `ack_mode` - (Optional) Determines how the shovel should acknowledge messages. Possible values are: `on-confirm`, `on-publish` and `no-ack`.
+Defaults to `on-confirm`.
+
+* `destination_add_forward_headers` - (Optional) Whether to add `x-shovelled` headers to shovelled messages.
+This is the successor of the `add_forward_headers` parameter. Both still work - `destination_add_forward_headers` takes precedence over `add_forward_headers`.
+
+* `destination_add_timestamp_headers` - (Optional) Whether to add `x-shovelled-timestamp` headers to shovelled messages.
+Defaults to `false`.
+
+* `destination_exchange` - (Optional) The exchange to which messages should be published.
+Either this or `destination_queue` must be specified but not both.
+
+* `destination_exchange_key` - (Optional) The routing key when using `destination_exchange`.
+
+* `destination_publish_properties` - (Optional) A map of properties to overwrite when shovelling messages.
 
 * `reconnect_delay` - (Optional) The duration in seconds to reconnect to a broker after disconnected.
 Defaults to `1`.
 
-* `add_forward_headers` - (Optional) Whether to amqp shovel headers.
-Defaults to `false`.
+* `source_delete_after` - (Optional) Determines when (if ever) the shovel should delete itself. Possible values are: `never`, `queue-length` or an integer.
+This is the successor of the `delete_after` parameter. Both still work - `source_delete_after` takes precedence over `delete_after`.
 
-* `ack_mode` - (Optional) Determines how the shovel should acknowledge messages.
-Defaults to `on-confirm`.
+* `source_exchange` - (Optional) The exchange from which to consume.
+Either this or `source_queue` must be specified but not both.
 
-* `delete_after` - (Optional) Determines when (if ever) the shovel should delete itself .
-Defaults to `never`.
+* `source_exchange_key` - (Optional) The routing key when using `source_exchange`.
+
+* `source_prefetch_count` - (Optional) The maximum number of unacknowledged messages copied over a shovel at any one time.
+This is the successor of the `prefetch_count` parameter. Both still work - `source_prefetch_count` takes precedence over `prefetch_count`.
+
+### AMQP 1.0 specific parameters
+
+* `source_address` - (Optional) The AMQP 1.0 source link address.
+
+* `destination_address` - (Optional) The AMQP 1.0 destination link address.
+
+* `destination_application_properties` - (Optional) Application properties to set when shovelling messages.
+
+* `destination_properties` - (Optional) Properties to overwrite when shovelling messages.
+
+For more details regarding dynamic shovel parameters please have a look at the official reference documentaion at [RabbitMQ: Configuring Dynamic Shovels](https://www.rabbitmq.com/shovel-dynamic.html).
 
 ## Attributes Reference
 
