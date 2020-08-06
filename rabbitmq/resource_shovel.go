@@ -73,9 +73,10 @@ func resourceShovel() *schema.Resource {
 							Default:  nil,
 						},
 						"destination_exchange": {
-							Type:     schema.TypeString,
-							Optional: true,
-							Default:  nil,
+							Type:          schema.TypeString,
+							ConflictsWith: []string{"info.0.destination_queue"},
+							Optional:      true,
+							Default:       nil,
 						},
 						"destination_exchange_key": {
 							Type:     schema.TypeString,
@@ -98,9 +99,10 @@ func resourceShovel() *schema.Resource {
 							Default:  nil,
 						},
 						"destination_queue": {
-							Type:     schema.TypeString,
-							Optional: true,
-							Default:  nil,
+							Type:          schema.TypeString,
+							ConflictsWith: []string{"info.0.destination_exchange"},
+							Default:       nil,
+							Optional:      true,
 						},
 						"destination_uri": {
 							Type:      schema.TypeString,
@@ -128,9 +130,10 @@ func resourceShovel() *schema.Resource {
 							Default:  nil,
 						},
 						"source_exchange": {
-							Type:     schema.TypeString,
-							Optional: true,
-							Default:  nil,
+							Type:          schema.TypeString,
+							Default:       nil,
+							ConflictsWith: []string{"info.0.source_queue"},
+							Optional:      true,
 						},
 						"source_exchange_key": {
 							Type:     schema.TypeString,
@@ -148,9 +151,10 @@ func resourceShovel() *schema.Resource {
 							Default:  "amqp091",
 						},
 						"source_queue": {
-							Type:     schema.TypeString,
-							Optional: true,
-							Default:  nil,
+							Type:          schema.TypeString,
+							ConflictsWith: []string{"info.0.source_exchange"},
+							Default:       nil,
+							Optional:      true,
 						},
 						"source_uri": {
 							Type:      schema.TypeString,
