@@ -85,8 +85,11 @@ Either this or `destination_exchange` must be specified but not both.
 * `ack_mode` - (Optional) Determines how the shovel should acknowledge messages. Possible values are: `on-confirm`, `on-publish` and `no-ack`.
 Defaults to `on-confirm`.
 
+* `add_forward_headers` - (Optional; **Deprecated**, please use `destination_add_forward_headers`) Whether to add `x-shovelled` headers to shovelled messages.
+
+* `delete_after` - (Optional; **Deprecated**, please use `source_delete_after`) Determines when (if ever) the shovel should delete itself. Possible values are: `never`, `queue-length` or an integer.
+
 * `destination_add_forward_headers` - (Optional) Whether to add `x-shovelled` headers to shovelled messages.
-This is the successor of the `add_forward_headers` parameter. Both still work - `destination_add_forward_headers` takes precedence over `add_forward_headers`.
 
 * `destination_add_timestamp_headers` - (Optional) Whether to add `x-shovelled-timestamp` headers to shovelled messages.
 Defaults to `false`.
@@ -98,11 +101,12 @@ Either this or `destination_queue` must be specified but not both.
 
 * `destination_publish_properties` - (Optional) A map of properties to overwrite when shovelling messages.
 
+* `prefetch_count` - (Optional; **Deprecated**, please use `source_prefetch_count`) The maximum number of unacknowledged messages copied over a shovel at any one time.
+
 * `reconnect_delay` - (Optional) The duration in seconds to reconnect to a broker after disconnected.
 Defaults to `1`.
 
 * `source_delete_after` - (Optional) Determines when (if ever) the shovel should delete itself. Possible values are: `never`, `queue-length` or an integer.
-This is the successor of the `delete_after` parameter. Both still work - `source_delete_after` takes precedence over `delete_after`.
 
 * `source_exchange` - (Optional) The exchange from which to consume.
 Either this or `source_queue` must be specified but not both.
@@ -110,7 +114,6 @@ Either this or `source_queue` must be specified but not both.
 * `source_exchange_key` - (Optional) The routing key when using `source_exchange`.
 
 * `source_prefetch_count` - (Optional) The maximum number of unacknowledged messages copied over a shovel at any one time.
-This is the successor of the `prefetch_count` parameter. Both still work - `source_prefetch_count` takes precedence over `prefetch_count`.
 
 ### AMQP 1.0 specific parameters
 
