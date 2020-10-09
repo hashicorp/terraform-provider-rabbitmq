@@ -46,7 +46,7 @@ go get github.com/michaelklishin/rabbit-hole/v2
 
 ### API Reference
 
-[API reference](http://godoc.org/github.com/michaelklishin/rabbit-hole) is available on [godoc.org](http://godoc.org).
+[API reference](https://pkg.go.dev/github.com/michaelklishin/rabbit-hole/v2?tab=doc) is available on [godoc.org](https://pkg.go.dev).
 
 Continue reading for a list of example snippets.
 
@@ -317,7 +317,17 @@ q, err := rmqc.GetShovel("/", "a.shovel")
 // => ShovelInfo, err
 
 // declares a shovel
-shovelDetails := rabbithole.ShovelDefinition{SourceURI: "amqp://sourceURI", SourceQueue: "mySourceQueue", DestinationURI: "amqp://destinationURI", DestinationQueue: "myDestQueue", AddForwardHeaders: true, AckMode: "on-confirm", DeleteAfter: "never"}
+shovelDetails := rabbithole.ShovelDefinition{
+	SourceURI: "amqp://sourceURI",
+	SourceProtocol: "amqp091",
+	SourceQueue: "mySourceQueue",
+	DestinationURI: "amqp://destinationURI",
+	DestinationProtocol: "amqp10",
+	DestinationAddress: "myDestQueue",
+	DestinationAddForwardHeaders: true,
+	AckMode: "on-confirm",
+	SrcDeleteAfter: "never",
+}
 resp, err := rmqc.DeclareShovel("/", "a.shovel", shovelDetails)
 // => *http.Response, err
 
