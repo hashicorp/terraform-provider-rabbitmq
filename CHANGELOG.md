@@ -1,4 +1,4 @@
-## 1.5.0 (Unreleased)
+## 1.5.1 (Unreleased)
 
 FEATURES:
 
@@ -8,6 +8,11 @@ FEATURES:
 DEV IMPROVEMENTS:
 
 * Add goreleaser config
+* Pusblish on Terraform registry: https://registry.terraform.io/providers/cyrilgdn/rabbitmq/latest
+
+## 1.5.0:
+
+Replaced by 1.5.1.
 
 ## 1.4.0 (July 17, 2020)
 
