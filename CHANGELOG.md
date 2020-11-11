@@ -1,4 +1,14 @@
 ## 1.5.0 (Unreleased)
+
+FEATURES:
+
+* `rabbitmq_shovel`: Add more parameters and allow to import.
+  ([#60](https://github.com/terraform-providers/terraform-provider-rabbitmq/pull/60))
+
+DEV IMPROVEMENTS:
+
+* Add goreleaser config
+
 ## 1.4.0 (July 17, 2020)
 
 FEATURES:
